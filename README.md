@@ -3,7 +3,7 @@ A small set of personal `.sh` scripts for keybindings and daily use on Arch Linu
 Still a work in progress.
 
 - `1`. [quote.sh](https://github.com/fr0st-iwnl/sh-toolbox/tree/master/Quotes#-quotesh) - A simple quote script that displays a random quote in the terminal.
-- `2`. [update.sh](https://github.com/fr0st-iwnl/sh-toolbox/tree/master/Quotes#-quotesh) - A simple system update script for managing system updates on Arch-based distributions, including AUR and Flatpak support.
+- `2`. [update.sh](https://github.com/fr0st-iwnl/sh-toolbox/tree/master/Quotes#-quotesh) - A simple script for managing updates on Arch-based distributions, including AUR and Flatpak support.
 - `3`. [weather.sh](https://github.com/fr0st-iwnl/sh-toolbox/tree/master/Weather#-weathersh) - A simple weather script that fetches the current weather for a specified location or auto-detects it based on your **IP** and sends a desktop notification using data from wttr.in.
 
 ## Keybindings
