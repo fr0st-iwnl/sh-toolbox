@@ -1,6 +1,6 @@
 # 🧰 sh-toolbox
 A small set of personal `.sh` scripts for daily use on Arch Linux with KDE.
-Still a work in progress.
+# Still a work in progress ❗
 
 - `1`. [quote.sh](https://github.com/fr0st-iwnl/sh-toolbox/tree/master/Quotes#-quotesh) - A simple quote script that displays a random quote in the terminal.
 - `2`. [update.sh](https://github.com/fr0st-iwnl/sh-toolbox/tree/master/System%20Update#-updatesh) - A simple script for managing updates on Arch-based distributions, including AUR and Flatpak support.
