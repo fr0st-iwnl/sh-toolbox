@@ -32,14 +32,17 @@ WARNING="\033[0;33m⚠\033[0m"
 
 # Function to display usage
 display_usage() {
+    echo
     echo -e "${BOLD}${BLUE}╔════════════════════════════════════════╗${NC}"
     echo -e "${BOLD}${BLUE}║           NETINFO USAGE                ║${NC}"
     echo -e "${BOLD}${BLUE}╚════════════════════════════════════════╝${NC}"
+    echo
     echo -e "${ARROW} ${BOLD}Options:${NC}"
     echo -e "  ${CHECK_MARK} ${CYAN}-h, --help${NC}      Show this help message"
     echo -e "  ${CHECK_MARK} ${CYAN}-s, --show-ip${NC}   Show public IP address (hidden by default)"
     echo -e "  ${CHECK_MARK} ${CYAN}-q, --quick${NC}     Show only basic information (no speed test)"
     echo -e "  ${CHECK_MARK} ${CYAN}-n, --no-notify${NC} Disable desktop notification"
+    echo
 }
 
 # Parse arguments
