@@ -1,27 +1,42 @@
 # 📦 update.sh
 
-A simple script for managing updates on Arch-based distributions, including AUR and Flatpak support.
+A simple script for managing system updates across various **Linux distributions**, including support for `AUR`, `Flatpak`, and `common package managers`.
 
 ## 🎬 Showcase
 
-https://github.com/user-attachments/assets/b99df5cd-1c42-4ad1-9dc3-0ef782d53a96
-
+https://github.com/user-attachments/assets/a4663feb-0799-4077-8713-60febc195593
 
 ## ✨ Features
 
 
-- Checks for updates in:
-  - Official Arch repositories
-  - AUR (using yay or paru)
-  - Flatpak
-- User confirmation before proceeding with updates
-- Outputs the number of available updates in a clear format
+#### Checks for updates in:
+- **Arch-based distributions:**
+  - Arch Linux
+  - Manjaro
+  - EndeavourOS
+- **Debian-based distributions:**
+  - Debian
+  - Ubuntu
+  - Linux Mint
+  - Pop!OS
+- **Red Hat-based distributions:**
+  - Fedora
+  - CentOS
+  - RHEL (Red Hat Enterprise Linux)
+  - SUSE-based distributions:
+  - openSUSE
+  - SUSE Linux
+  
+- **The script also handles Flatpak updates across all supported distributions.**
+- **User confirmation before proceeding with updates.**
+- **Outputs the number of available updates in a clear format.**
 
 
 ## 📦 Installation
 
 Just download the `.sh` script or `git clone` the repo.
 
+<!---
 ## 🧭 Steps to Create the Custom Command
 
 
@@ -58,7 +73,7 @@ source ~/.bashrc
 ```bash
 source ~/.zshrc
 ```
-   
+--->   
    
 
    
