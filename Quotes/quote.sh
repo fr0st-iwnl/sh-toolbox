@@ -60,8 +60,8 @@ else
 fi
 
 echo ""
-echo -e "${PURPLE}${BOLD}📜 QUOTE OF THE DAY 📜${RESET}"
-echo -e "${GREEN}-----------------------${RESET}"
+echo -e "${PURPLE}${BOLD}       <<< QUOTE OF THE DAY >>>   ${RESET}"
+echo -e "${GREEN}──────────────────────────────────────${RESET}"
 echo ""
 echo -e "${TIP_COLOR}$EMOJI ${selected_quote}${RESET}"
 echo ""
