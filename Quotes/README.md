@@ -4,7 +4,7 @@ A simple quote script that displays a random quote in the terminal.
 
 ## 🎬 Showcase
 
-https://github.com/user-attachments/assets/1de4ddc3-803b-439d-a9de-a0a7c14bf2b4
+https://github.com/user-attachments/assets/bc631024-b94a-49a6-bbd4-33ae94b9aece
 
 
 ## 📦 Installation
