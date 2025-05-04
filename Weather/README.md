@@ -10,10 +10,10 @@ https://github.com/user-attachments/assets/fc9912ce-ca7b-4aae-9679-b46d0c38076a
 
 ### Options:
 -  `--location, -l`        Specify a location (city, airport code, etc.)
--  `--type, -t`            Forecast type: simple, detailed, 3day (default: simple)
--  `--privacy, -p`         Enable privacy mode (hide location information)
--  `--units, -u`           Temperature units: C for Celsius, F for Fahrenheit (default: C)
--  `--no-notify, -n`       Disable desktop notifications (notify-send required)
+-  `--type, -t`            Forecast type: **simple**, **detailed**, **3day** (default: simple)
+-  `--privacy, -p`         Enable privacy mode **(hide location information)**
+-  `--units, -u`           Temperature units: `C` for Celsius, `F` for Fahrenheit (default: C)
+-  `--no-notify, -n`       Disable desktop notifications **(notify-send required)**
 -  `--help, -h`            Show this help message
 
 ### Examples:
