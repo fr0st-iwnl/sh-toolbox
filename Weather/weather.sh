@@ -34,26 +34,18 @@ RESET="\033[0m"
 
 # Echo Command Line Arguments
 show_help() {
-  echo
-  echo -e "${BOLD}Usage:${RESET} $(basename "$0") [options]"
+  echo -e "${BOLD}${BLUE}"
+  echo "┌───────────────────────────────────┐"
+  echo "│           WEATHER HELP            │"
+  echo "└───────────────────────────────────┘"
   echo 
   echo -e "${BOLD}Options:${RESET}"
   echo -e "  ${GREEN}--location, -l${RESET}        Specify a location (city, airport code, etc.)"
-  echo -e "  ${GREEN}--type, -t${RESET}            Forecast type: simple, detailed, 3day (default: simple)"
+  echo -e "  ${GREEN}--type, -t${RESET}            Forecast type: ${GREEN}simple${RESET}, ${GREEN}detailed${RESET}, ${GREEN}3day${RESET} (default: ${GREEN}simple${RESET})"
   echo -e "  ${GREEN}--privacy, -p${RESET}         Enable privacy mode (hide location information)"
-  echo -e "  ${GREEN}--units, -u${RESET}           Temperature units: C for Celsius, F for Fahrenheit (default: C)"
+  echo -e "  ${GREEN}--units, -u${RESET}           Temperature units: ${GREEN}C${RESET} for Celsius, ${GREEN}F${RESET} for Fahrenheit (default: ${GREEN}C${RESET})"
   echo -e "  ${GREEN}--no-notify, -n${RESET}       Disable desktop notifications (notify-send required)"
   echo -e "  ${GREEN}--help, -h${RESET}            Show this help message"
-  echo
-  echo -e "${BOLD}Examples:${RESET}"
-  echo -e "  ${CYAN}$(basename "$0")${RESET}                                # Current location, simple forecast"
-  echo -e "  ${CYAN}$(basename "$0") --location London${RESET}              # Weather in London"
-  echo -e "  ${CYAN}$(basename "$0") --type detailed${RESET}                # Detailed weather information"
-  echo -e "  ${CYAN}$(basename "$0") --location Tokyo --type 3day${RESET}   # 3-day forecast for Tokyo"
-  echo -e "  ${CYAN}$(basename "$0") --privacy${RESET}                      # Hide location information"
-  echo -e "  ${CYAN}$(basename "$0") --units F${RESET}                      # Show temperature in Fahrenheit"
-  echo -e "  ${CYAN}$(basename "$0") --no-notify${RESET}                    # Disable desktop notifications (notify-send required)"
-  echo
 }
 
 # Parse command line arguments

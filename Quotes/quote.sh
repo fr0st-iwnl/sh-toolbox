@@ -15,10 +15,44 @@
 CYAN='\033[0;36m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
+BLUE='\033[1;34m'
 PURPLE='\033[0;35m'
 BOLD='\033[1m'
 RESET='\033[0m'
+
+# FUNCTIONS
+show_help() {
+    echo -e "${BOLD}${BLUE}"
+    echo "┌───────────────────────────────────┐"
+    echo "│           QUOTE HELP              │"
+    echo "└───────────────────────────────────┘"
+    echo ""
+    echo -e "${CYAN}${BOLD}Options:${RESET}"
+    echo -e "  ${YELLOW}-h${RESET}    ${GREEN}Show this help message${RESET}"
+    echo -e "  ${YELLOW}-n${RESET}    ${GREEN}Show quote as a desktop notification${RESET}"
+    echo ""
+    echo -e "${BLUE}This script displays a random quote in the terminal.${RESET}"
+    echo ""
+    exit 0
+}
+
+# PARSE ARGUMENTS
+show_notification=false
+
+while getopts "hn" opt; do
+    case $opt in
+        h)
+            show_help
+            ;;
+        n)
+            show_notification=true
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG" >&2
+            show_help
+            ;;
+    esac
+done
 
 # QUOTES
 quotes=(
@@ -59,9 +93,25 @@ else
     EMOJI="💭"
 fi
 
-echo ""
-echo -e "${PURPLE}${BOLD}       <<< QUOTE OF THE DAY >>>   ${RESET}"
-echo -e "${GREEN}──────────────────────────────────────${RESET}"
-echo ""
-echo -e "${TIP_COLOR}$EMOJI ${selected_quote}${RESET}"
-echo ""
+# Display the quote in terminal
+if ! $show_notification; then
+    echo ""
+    echo -e "${PURPLE}${BOLD}       <<< QUOTE OF THE DAY >>>   ${RESET}"
+    echo -e "${GREEN}──────────────────────────────────────${RESET}"
+    echo ""
+    echo -e "${TIP_COLOR}$EMOJI ${selected_quote}${RESET}"
+    echo ""
+fi
+
+# Send notification if requested
+if $show_notification; then
+    # Remove color codes for notification
+    clean_quote="${selected_quote}"
+    if command -v notify-send &> /dev/null; then
+        # Set notification to stay for 7 seconds with -t option (time in milliseconds)
+        notify-send -t 7000 "Quote of the Day" "$EMOJI $clean_quote"
+    else
+        echo "Error: notify-send command not found. Please install libnotify-bin package."
+        exit 1
+    fi
+fi

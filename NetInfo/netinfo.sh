@@ -15,7 +15,7 @@
 
 # Colors :)
 GREEN='\033[0;32m'
-BLUE='\033[0;34m'
+BLUE='\033[1;34m'
 RED='\033[0;31m'
 YELLOW='\033[0;33m'
 CYAN='\033[0;36m'
@@ -32,10 +32,10 @@ WARNING="\033[0;33m⚠\033[0m"
 
 # Function to display usage
 display_usage() {
-    echo
-    echo -e "${BOLD}${BLUE}╔════════════════════════════════════════╗${NC}"
-    echo -e "${BOLD}${BLUE}║           NETINFO USAGE                ║${NC}"
-    echo -e "${BOLD}${BLUE}╚════════════════════════════════════════╝${NC}"
+    echo -e "${BOLD}${BLUE}"
+    echo "┌───────────────────────────────────┐"
+    echo "│           NETINFO HELP            │"
+    echo "└───────────────────────────────────┘"
     echo
     echo -e "${ARROW} ${BOLD}Options:${NC}"
     echo -e "  ${CHECK_MARK} ${CYAN}-h, --help${NC}      Show this help message"

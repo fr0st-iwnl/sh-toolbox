@@ -23,6 +23,8 @@ show_welcome() {
     echo "                                                       "
     echo -e "${NC}"
     echo -e "${CYAN}Welcome to sh-toolbox - A collection of useful shell tools${NC}"
+    echo
+    echo -e "${YELLOW}Version: ${NC}1.0"
     echo -e "${YELLOW}GitHub: ${NC}https://github.com/fr0st-iwnl/sh-toolbox"
     echo
 }
