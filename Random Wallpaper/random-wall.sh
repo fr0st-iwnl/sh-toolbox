@@ -185,8 +185,8 @@ show_current_wallpaper() {
             elif command -v timg >/dev/null 2>&1; then
                 timg -g 60x16 "$current_wallpaper"
             elif command -v kitty >/dev/null 2>&1 && [ "$TERM" = "xterm-kitty" ]; then
-                # Simple kitty command for compatibility
-                kitty +kitten icat "$current_wallpaper"
+                print_warning "Cannot display image in terminal."
+                print_info "Install one of: catimg, timg, chafa, or img2sixel"
             elif command -v chafa >/dev/null 2>&1; then
                 chafa -s 60x16 "$current_wallpaper"
             elif command -v img2sixel >/dev/null 2>&1; then
@@ -224,7 +224,8 @@ display_image_preview() {
         timg -g 60x16 "$image_path"
     elif command -v kitty >/dev/null 2>&1 && [ "$TERM" = "xterm-kitty" ]; then
         # kitty with most basic command - maximum compatibility
-        kitty +kitten icat "$image_path"
+        print_warning "Cannot display image in terminal."
+        print_info "Install one of: catimg, timg, chafa, or img2sixel"
     elif command -v chafa >/dev/null 2>&1; then
         # chafa with size constraint
         chafa -s 60x16 "$image_path"
