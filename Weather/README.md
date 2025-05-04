@@ -30,7 +30,7 @@ https://github.com/user-attachments/assets/fc9912ce-ca7b-4aae-9679-b46d0c38076a
 
 Just download the `.sh` script or `git clone` the repo.
 
-## 🧭 Steps to Create the Custom Command
+## 🧭 Steps to Create the Custom Command [MANUAL]
 
 
 1. **Create the `bin` Directory**  
