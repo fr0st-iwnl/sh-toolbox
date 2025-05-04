@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # weather.sh
+#
 # A simple weather script that displays the weather for a given location
 # and sends desktop notifications with the weather information.
 #
