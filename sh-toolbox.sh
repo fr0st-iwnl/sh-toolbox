@@ -260,13 +260,13 @@ main() {
             if [ $# -eq 0 ]; then
                 show_welcome
                 echo -e "${BOLD}${MID_BLUE}Quick Start:${NC}"
-                echo -e "  1. Run ${GREEN}sh-toolbox -i${NC} to install sh-toolbox"
-                echo -e "  2. Run ${GREEN}sh-toolbox -c${NC} to see all available commands"
-                echo -e "  3. Run ${GREEN}sh-toolbox -h${NC} for detailed help"
+                echo -e "  1. Run ${GREEN}./sh-toolbox -i${NC} to install sh-toolbox"
+                echo -e "  2. Run ${GREEN}./sh-toolbox -c${NC} to see all available commands"
+                echo -e "  3. Run ${GREEN}./sh-toolbox -h${NC} for detailed help"
                 echo
             else
                 echo -e "${RED}Unknown option: $1${NC}"
-                echo -e "Use ${GREEN}sh-toolbox -h${NC} to see available options"
+                echo -e "Use ${GREEN}./sh-toolbox -h${NC} to see available options"
                 exit 1
             fi
             ;;
