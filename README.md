@@ -1,5 +1,7 @@
 # 🧰 sh-toolbox
-A small set of personal `.sh` scripts for daily use on Arch Linux with KDE.
+
+A collection of useful `.sh` scripts for daily use across various Linux distributions and desktop environments.
+
 # Still a work in progress ❗
 
 - `1`. [quote.sh](https://github.com/fr0st-iwnl/sh-toolbox/tree/master/Quotes#-quotesh) - A simple quote script that displays a random quote in the terminal.
