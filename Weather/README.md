@@ -28,7 +28,7 @@ https://github.com/user-attachments/assets/fc9912ce-ca7b-4aae-9679-b46d0c38076a
 
 ## 📦 Installation
 
-Just download the `.sh` script or `git clone` the repo.
+Just download the `.sh` script or follow the steps in the [Installation](https://github.com/fr0st-iwnl/sh-toolbox?tab=readme-ov-file#-installation) section.
 
 ## 🧭 Steps to Create the Custom Command [MANUAL]
 
