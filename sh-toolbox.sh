@@ -1,5 +1,17 @@
 #!/bin/bash
 
+# sh-toolbox.sh
+#
+# A collection of useful shell tools.
+#
+# Author: @fr0st-iwnl
+#=================================================================
+# Repository: https://github.com/fr0st-iwnl/sh-toolbox
+#-----------------------------------------------------------------
+# Issues: https://github.com/fr0st-iwnl/sh-toolbox/issues/
+# Pull Requests: https://github.com/fr0st-iwnl/sh-toolbox/pulls
+#-----------------------------------------------------------------
+
 # Colors for output
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'

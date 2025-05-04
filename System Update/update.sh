@@ -1,6 +1,18 @@
 #!/usr/bin/env bash
 
-# Define color codes
+# update.sh
+# A simple script for managing system updates across various Linux distributions,
+# including support for AUR, Flatpak, and common package managers
+#
+# Author: @fr0st-iwnl
+#=================================================================
+# Repository: https://github.com/fr0st-iwnl/sh-toolbox
+#-----------------------------------------------------------------
+# Issues: https://github.com/fr0st-iwnl/sh-toolbox/issues/
+# Pull Requests: https://github.com/fr0st-iwnl/sh-toolbox/pulls
+#-----------------------------------------------------------------
+
+# Colors :)
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[38;2;152;251;152m'

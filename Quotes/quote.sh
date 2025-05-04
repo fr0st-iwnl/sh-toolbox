@@ -7,8 +7,8 @@
 #=================================================================
 # Repository: https://github.com/fr0st-iwnl/sh-toolbox
 #-----------------------------------------------------------------
-# Issue: https://github.com/fr0st-iwnl/sh-toolbox/issues/
-# Pull Request: https://github.com/fr0st-iwnl/sh-toolbox/pulls
+# Issues: https://github.com/fr0st-iwnl/sh-toolbox/issues/
+# Pull Requests: https://github.com/fr0st-iwnl/sh-toolbox/pulls
 #-----------------------------------------------------------------
 
 # COLORS
