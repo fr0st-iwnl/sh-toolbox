@@ -1,4 +1,4 @@
-# 🧰 sh-toolbox
+# 🧰 \\\ sh-toolbox
 
 A collection of useful `.sh` scripts for daily use across various Linux distributions and desktop environments.
 
