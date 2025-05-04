@@ -67,7 +67,6 @@ print_warning() {
 save_config() {
     echo "# Random Wallpaper Configuration" > "$CONFIG_FILE"
     echo "WALLPAPER_DIR=\"$WALLPAPER_DIR\"" >> "$CONFIG_FILE"
-    print_success "Saved directory preference: $WALLPAPER_DIR"
 }
 
 # Function to save the current wallpaper info
@@ -89,7 +88,7 @@ show_help() {
 
 # Default configuration (if not saved in config file)
 if [ -z "$WALLPAPER_DIR" ]; then
-    WALLPAPER_DIR="$HOME/Pictures/wallz/Greenify"
+    WALLPAPER_DIR="$HOME/Pictures"
 fi
 
 # Get desktop environment (needed for several functions)
@@ -186,7 +185,8 @@ show_current_wallpaper() {
             elif command -v timg >/dev/null 2>&1; then
                 timg -g 60x16 "$current_wallpaper"
             elif command -v kitty >/dev/null 2>&1 && [ "$TERM" = "xterm-kitty" ]; then
-                kitty +kitten icat --scale-up=false --place=40x15@center "$current_wallpaper"
+                # Simple kitty command for compatibility
+                kitty +kitten icat "$current_wallpaper"
             elif command -v chafa >/dev/null 2>&1; then
                 chafa -s 60x16 "$current_wallpaper"
             elif command -v img2sixel >/dev/null 2>&1; then
@@ -223,8 +223,8 @@ display_image_preview() {
         # timg with width and height constraints
         timg -g 60x16 "$image_path"
     elif command -v kitty >/dev/null 2>&1 && [ "$TERM" = "xterm-kitty" ]; then
-        # kitty with max dimensions 
-        kitty +kitten icat --scale-up=false --place=40x15@center "$image_path"
+        # kitty with most basic command - maximum compatibility
+        kitty +kitten icat "$image_path"
     elif command -v chafa >/dev/null 2>&1; then
         # chafa with size constraint
         chafa -s 60x16 "$image_path"
@@ -324,6 +324,13 @@ if [ "$SHOW_PATH_INFO" = true ]; then
     fi
     
     print_info "To change directory, use: ${YELLOW}${BOLD}-p \"/path/to/wallpapers\"${RESET}"
+    
+    # Show saved message if path was changed
+    if [ "$PATH_CHANGED" = true ]; then
+        echo
+        print_success "Saved directory preference"
+    fi
+    
     echo
     
     # Show image preview if requested and wallpaper exists
@@ -341,8 +348,8 @@ print_info "Wallpaper directory: ${BOLD}${WALLPAPER_DIR}${RESET}"
 # Use quotes around paths to handle spaces
 if [ ! -d "${WALLPAPER_DIR}" ]; then
     print_error "Wallpaper directory '${WALLPAPER_DIR}' does not exist."
-    print_info "Please create the directory or specify a valid path with -p option."
-    print_info "For paths with spaces, use quotes: -p \"/path with spaces\""
+    print_info "Please specify a valid path with -p option."
+    echo
     exit 1
 fi
 

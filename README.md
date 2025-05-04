@@ -11,7 +11,7 @@ Then run these commands in your terminal.
 ```bash
 cd sh-toolbox
 chmod +x sh-toolbox.sh
-./sh-toolbox
+./sh-toolbox.sh
 ```
 
 ## 🔧 Script Collection

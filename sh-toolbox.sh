@@ -125,6 +125,12 @@ run_installer() {
     show_success "Weather installed as 'weather'"
     echo
 
+    animate_progress "Installing Random Wallpaper tool"
+    cp "$(pwd)/Random Wallpaper/random-wall.sh" "$HOME/.local/share/bin/random-wall"
+    chmod +x "$HOME/.local/share/bin/random-wall"
+    show_success "Random Wallpaper installed as 'random-wall'"
+    echo
+
     # 3. Update PATH in shell configuration
     echo -e "${BOLD}Configuring shell:${NC}"
     shell_config=""
