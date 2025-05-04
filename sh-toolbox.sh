@@ -85,7 +85,7 @@ run_installer() {
     echo -e "${NC}"
 
     # Check if running from the correct directory
-    if [ ! -d "NetInfo" ] || [ ! -d "Quotes" ] || [ ! -d "Weather" ] || [ ! -d "System Update" ]; then
+    if [ ! -d "NetInfo" ] || [ ! -d "Quotes" ] || [ ! -d "Weather" ] || [ ! -d "System Update" ] || [ ! -d "Random Wallpaper" ]; then
         show_error "Missing required directories. Please run this script from the sh-toolbox root directory"
         exit 1
     fi
@@ -192,6 +192,7 @@ run_uninstaller() {
     rm -f "$HOME/.local/share/bin/quote" 2>/dev/null
     rm -f "$HOME/.local/share/bin/update" 2>/dev/null
     rm -f "$HOME/.local/share/bin/weather" 2>/dev/null
+    rm -f "$HOME/.local/share/bin/random-wall" 2>/dev/null
     show_success "Removed all sh-toolbox scripts"
 
     # Clean up PATH in shell configuration if bin directory is empty
@@ -252,7 +253,7 @@ main() {
             echo -e "  ${GREEN}quote${NC}      - Show random inspirational quotes"
             echo -e "  ${GREEN}update${NC}     - Update system packages (Arch Linux with AUR and Flatpak support)"
             echo -e "  ${GREEN}weather${NC}    - Show current weather information for your location"
-            echo
+            echo -e " ${GREEN}random-wall${NC} - Set a random wallpaper from a directory"
             ;;
         *)
             # Display welcome message and brief info for no arguments
