@@ -11,10 +11,10 @@ https://github.com/user-attachments/assets/89c4cfca-2b2f-496b-9add-d4f5b5ca78e2
 - **Customizable wallpaper directory path**
 - **Displays preview in terminal** (if terminal supports image display)
 - **Sets wallpaper using:**
-  - **feh** (for minimal window managers)
-  - **gsettings** (for GNOME)
-  - **xfconf-query** (for XFCE)
-  - **plasma-apply-wallpaperimage** (for KDE Plasma)
+  - **`feh`** (for minimal window managers)
+  - **`gsettings`** (for GNOME)
+  - **`xfconf-query`** (for XFCE)
+  - **`plasma-apply-wallpaperimage`** (for KDE Plasma)
 
 
 
