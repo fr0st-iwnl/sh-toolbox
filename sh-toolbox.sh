@@ -14,7 +14,7 @@
 
 # Colors for output
 GREEN='\033[0;32m'
-BLUE='\033[0;34m'
+BLUE='\033[1;34m'
 CYAN='\033[0;36m'
 LIGHT_BLUE='\033[1;34m'
 MID_BLUE='\033[38;2;30;144;255m'  # DodgerBlue
