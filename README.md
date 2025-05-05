@@ -21,6 +21,7 @@ chmod +x sh-toolbox.sh
 - `3`. [weather.sh](https://github.com/fr0st-iwnl/sh-toolbox/tree/master/Weather#-weathersh) - A simple weather script that fetches the current weather for a specified location or auto-detects it based on your **IP** and sends a desktop notification using data from [wttr.in](https://wttr.in/).
 - `4`. [netinfo.sh](https://github.com/fr0st-iwnl/sh-toolbox/tree/master/NetInfo#-netinfosh) - A simple script that displays detailed network information, including IP addresses, connection latency, and internet speeds in the terminal using `speedtest-cli`.
 - `5`. [random-wall.sh](https://github.com/fr0st-iwnl/sh-toolbox/tree/master/Random%20Wallpaper#-random-wallsh) - A simple script to display random wallpapers from a specified directory.
+- `6`. [remind-me.sh](https://github.com/fr0st-iwnl/sh-toolbox/blob/master/Remind%20Me/README.md#-remind-mesh) - A script to set reminders with notifications and sound
 
 ## ⌨️ Keybindings
 
