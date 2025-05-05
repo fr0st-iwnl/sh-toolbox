@@ -262,6 +262,7 @@ main() {
             echo -e "  ${GREEN}netinfo${NC}    - Display detailed network information (IP, speeds, latency)"
             echo -e " ${GREEN}random-wall${NC} - Set a random wallpaper from a directory"
             echo -e "  ${GREEN}remind-me${NC}  - Set reminders for yourself"
+            echo
             ;;
         *)
             # Display welcome message and brief info for no arguments
