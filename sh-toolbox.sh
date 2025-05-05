@@ -85,7 +85,7 @@ run_installer() {
     echo -e "${NC}"
 
     # Check if running from the correct directory
-    if [ ! -d "NetInfo" ] || [ ! -d "Quotes" ] || [ ! -d "Weather" ] || [ ! -d "System Update" ] || [ ! -d "Random Wallpaper" ]; then
+    if [ ! -d "NetInfo" ] || [ ! -d "Quotes" ] || [ ! -d "Remind Me" ] || [ ! -d "Weather" ] || [ ! -d "System Update" ] || [ ! -d "Random Wallpaper" ]; then
         show_error "Missing required directories. Please run this script from the sh-toolbox root directory"
         exit 1
     fi
@@ -108,6 +108,12 @@ run_installer() {
     cp "$(pwd)/NetInfo/netinfo.sh" "$HOME/.local/share/bin/netinfo"
     chmod +x "$HOME/.local/share/bin/netinfo"
     show_success "NetInfo installed as 'netinfo'"
+
+    animate_progress "Installing Remind Me tool"
+    cp "$(pwd)/Remind Me/remind-me.sh" "$HOME/.local/share/bin/remind-me"
+    chmod +x "$HOME/.local/share/bin/remind-me"
+    show_success "Remind Me installed as 'remind-me'"
+
 
     animate_progress "Installing Quote tool"
     cp "$(pwd)/Quotes/quote.sh" "$HOME/.local/share/bin/quote"
@@ -189,6 +195,7 @@ run_uninstaller() {
     animate_progress "Removing sh-toolbox scripts"
     rm -f "$HOME/.local/share/bin/sh-toolbox" 2>/dev/null
     rm -f "$HOME/.local/share/bin/netinfo" 2>/dev/null
+    rm -f "$HOME/.local/share/bin/remind-me" 2>/dev/null
     rm -f "$HOME/.local/share/bin/quote" 2>/dev/null
     rm -f "$HOME/.local/share/bin/update" 2>/dev/null
     rm -f "$HOME/.local/share/bin/weather" 2>/dev/null
@@ -249,11 +256,12 @@ main() {
             echo
             echo -e "${BOLD}${BLUE}Available Commands:${NC}"
             echo
-            echo -e "  ${GREEN}netinfo${NC}    - Display detailed network information (IP, speeds, latency)"
             echo -e "  ${GREEN}quote${NC}      - Show random inspirational quotes"
             echo -e "  ${GREEN}update${NC}     - Update system packages (Arch Linux with AUR and Flatpak support)"
             echo -e "  ${GREEN}weather${NC}    - Show current weather information for your location"
+            echo -e "  ${GREEN}netinfo${NC}    - Display detailed network information (IP, speeds, latency)"
             echo -e " ${GREEN}random-wall${NC} - Set a random wallpaper from a directory"
+            echo -e "  ${GREEN}remind-me${NC}  - Set reminders for yourself"
             ;;
         *)
             # Display welcome message and brief info for no arguments

@@ -1,9 +1,18 @@
 #!/bin/bash
 
+# random-wall.sh
+#
 # Script to randomly change wallpaper
-# Usage: ./random-wall.sh [options]
+#
+# Author: @fr0st-iwnl
+#=================================================================
+# Repository: https://github.com/fr0st-iwnl/sh-toolbox
+#-----------------------------------------------------------------
+# Issues: https://github.com/fr0st-iwnl/sh-toolbox/issues/
+# Pull Requests: https://github.com/fr0st-iwnl/sh-toolbox/pulls
+#-----------------------------------------------------------------
 
-# Define colors and styles
+# Colors :)
 BOLD="\033[1m"
 GREEN="\033[0;32m"
 BLUE="\033[1;34m"
@@ -288,8 +297,10 @@ while [[ $# -gt 0 ]]; do
                 PATH_CHANGED=true
                 PATH_PROVIDED=true
             else
+                echo
                 print_error "Unknown option: $1"
                 print_info "Use -h or --help to see available options"
+                echo
                 exit 1
             fi
             ;;

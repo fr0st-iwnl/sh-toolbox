@@ -46,6 +46,7 @@ show_help() {
   echo -e "  ${GREEN}--units, -u${RESET}           Temperature units: ${GREEN}C${RESET} for Celsius, ${GREEN}F${RESET} for Fahrenheit (default: ${GREEN}C${RESET})"
   echo -e "  ${GREEN}--no-notify, -n${RESET}       Disable desktop notifications (notify-send required)"
   echo -e "  ${GREEN}--help, -h${RESET}            Show this help message"
+  echo
 }
 
 # Parse command line arguments

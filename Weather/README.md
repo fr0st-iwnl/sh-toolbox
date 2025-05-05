@@ -6,7 +6,30 @@ A simple weather script that fetches the current weather for a specified locatio
 
 https://github.com/user-attachments/assets/fc9912ce-ca7b-4aae-9679-b46d0c38076a
 
+
 ## ✨ Features
+
+- **Fetches weather data from wttr.in:**
+  - **Current conditions**
+  - **Temperature**
+  - **Precipitation**
+  - **Wind speed and direction**
+- **Multiple forecast types:**
+  - **Simple** (basic current conditions)
+  - **Detailed** (comprehensive weather data)
+  - **3-day forecast**
+- **Location options:**
+  - **Auto-detection** based on IP
+  - **Manual location** specification
+  - **Privacy mode** to hide location details
+- **Customizable units** (Celsius/Fahrenheit)
+- **Desktop notifications** with weather updates
+- **Clean, minimal output formatting**
+
+
+
+
+## 📝 Command Options
 
 ### Options:
 -  `--location, -l`        Specify a location (city, airport code, etc.)

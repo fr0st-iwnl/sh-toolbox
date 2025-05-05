@@ -7,6 +7,13 @@ A simple quote script that displays a random quote in the terminal.
 https://github.com/user-attachments/assets/bc631024-b94a-49a6-bbd4-33ae94b9aece
 
 
+## ✨ Features
+
+- **Displays random quotes**
+- **Clean, minimal output formatting**
+
+
+
 ## 📦 Installation
 
 Just download the `.sh` script or follow the steps in the [Installation](https://github.com/fr0st-iwnl/sh-toolbox?tab=readme-ov-file#-installation) section.

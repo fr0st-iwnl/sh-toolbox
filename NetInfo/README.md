@@ -8,8 +8,25 @@ https://github.com/user-attachments/assets/fe2d67e9-17de-4170-8b08-7fedc84137c0
 
 ## ✨ Features
 
+- **Displays detailed network information:**
+  - **Public IP address** (optional)
+  - **Local IP address**
+  - **Network interface details**
+  - **Connection latency**
+- **Internet speed test** (using speedtest-cli)
+  - **Download speed**
+  - **Upload speed**
+  - **Ping**
+- **Desktop notifications** for test results
+- **Quick mode** for basic info only
+- **Clean, minimal output formatting**
+
+
+
+## 📝 Command Options
+
 ### Options:
--  `--help, -h`            Show this help message
+-  `--help, -h`            Show the help message
 -  `--show-ip, -s`         Show public IP address (hidden by default)
 -  `--quick, -q`           Show only basic information (no speed test)
 -  `--no-notify, -n`         Disable desktop notification

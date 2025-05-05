@@ -6,6 +6,26 @@ A simple script to display random wallpapers from a specified directory.
 
 https://github.com/user-attachments/assets/89c4cfca-2b2f-496b-9add-d4f5b5ca78e2
 
+## ✨ Features
+- **Randomly selects wallpapers from a specified directory**
+- **Customizable wallpaper directory path**
+- **Displays preview in terminal** (if terminal supports image display)
+- **Sets wallpaper using:**
+  - **feh** (for minimal window managers)
+  - **gsettings** (for GNOME)
+  - **xfconf-query** (for XFCE)
+  - **plasma-apply-wallpaperimage** (for KDE Plasma)
+
+
+
+## 📝 Command Options
+
+-  `-h`, `--help`     Show the help message
+-  `-p`, `--path`     Specifies the path to wallpapers directory
+-  `-s`, `--show`     Show the selected wallpaper in terminal **(if supported)**
+
+
+
 
 ## 📦 Installation
 
