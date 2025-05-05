@@ -4,6 +4,7 @@ A script to set reminders with notifications and sound
 
 ## 🎬 Showcase
 
+https://github.com/user-attachments/assets/b17fc03c-44db-429b-8da0-38150ea37f23
 
 
 ## ✨ Features
