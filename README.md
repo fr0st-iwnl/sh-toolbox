@@ -1,18 +1,54 @@
-# 🧰 \\\ sh-toolbox [STILL A WIP]
+<h1 align="center">
+  <a href="https://github.com/fr0st-iwnl/sh-toolbox" target="_blank"><img src="https://github.com/fr0st-iwnl/assets/blob/main/thumbnails/sh-toolbox/sh-toolbox-40px.png" alt="sh-toolbox" width="900"></a>
+</h1>
+<p align="center"><strong>A collection of useful <code>.sh</code> scripts for daily use across various Linux distributions and desktop environments.</strong></p>
 
-A collection of useful `.sh` scripts for daily use across various Linux distributions and desktop environments.
+
+<p align="center">
+<a href="#-installation">Installation</a> •
+<a href="#-features">Features</a> •
+  <a href="#-script-collection">Script Collection</a> •
+<a href="keybindings">Keybindings</a>
+</p>
+
+
+## ✨ Features
+
+- **Works Everywhere:**
+  - Runs on most Linux systems without problems
+
+- **Easy to Use:**
+  - Quick setup with just a few commands
+  - Consistent UI with helpful notifications
+  - Simple, clean code
+
+- **Pick What You Need:**
+  - Use only the scripts you want
+  - Easy to change for your needs
+  - Light on system resources
+
+- **Set It and Forget It:**
+  - Automate routine tasks with minimal configuration
+  - Works well with keyboard shortcuts
+  - Flexible enough to fit into your existing workflow
+
+
+
 
 ## 📦 Installation
-First git clone the repository.
+<!---First git clone the repository.
 ```
 git clone https://github.com/fr0st-iwnl/sh-toolbox.git
 ```
-Then run these commands in your terminal.
+-Then run these commands in your terminal.--->
 ```bash
+git clone https://github.com/fr0st-iwnl/sh-toolbox.git
 cd sh-toolbox
 chmod +x sh-toolbox.sh
-./sh-toolbox.sh
+./sh-toolbox.sh -i
+./sh-toolbox.sh -c
 ```
+**✅ Done!**
 
 ## 🔧 Script Collection
 
@@ -25,5 +61,5 @@ chmod +x sh-toolbox.sh
 
 ## ⌨️ Keybindings
 
-`📁`. [Keybindings](https://github.com/fr0st-iwnl/sh-toolbox/tree/master/Keybindings) - Simple Macros for Arch Linux on KDE
+`📁`. [Keybindings](https://github.com/fr0st-iwnl/sh-toolbox/tree/master/Keybindings) - Simple Macros for Arch Linux on KDE <strong>[BETA]</strong>
 
