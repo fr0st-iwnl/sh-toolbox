@@ -11,16 +11,16 @@ https://github.com/user-attachments/assets/b17fc03c-44db-429b-8da0-38150ea37f23
 
 - **Set reminders with custom messages and durations**
 - **Flexible time format support:**
-  - Simple minutes/hours (e.g., 5m, 2h)
-  - Complex combinations (e.g., 1h 30m 45s)
+  - Simple minutes/hours (e.g., `5m`, `2h`)
+  - Complex combinations (e.g., `1h 30m 45s`)
 - **Multiple notification methods:**
   - Visual alerts with flashing text
   - Audio alerts using various sound methods:
-    - **System beep**
-    - **PulseAudio**
-    - **ALSA**
-    - **Speaker-test**
-    - **Mplayer**
+    - **`System beep`**
+    - **`PulseAudio`**
+    - **`ALSA`**
+    - **`Speaker-test`**
+    - **`Mplayer`**
 - **Persistent reminders that continue until dismissed**
 
 ## 📝 Command Options
