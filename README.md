@@ -8,7 +8,7 @@
 <a href="#-installation">Installation</a> •
 <a href="#-features">Features</a> •
   <a href="#-script-collection">Script Collection</a> •
-<a href="keybindings">Keybindings</a>
+<a href="#-keybindings">Keybindings</a>
 </p>
 
 
@@ -41,6 +41,7 @@
 git clone https://github.com/fr0st-iwnl/sh-toolbox.git
 ```
 -Then run these commands in your terminal.--->
+To get started with `sh-toolbox`, simply run the commands below:
 ```bash
 git clone https://github.com/fr0st-iwnl/sh-toolbox.git
 cd sh-toolbox
@@ -48,7 +49,8 @@ chmod +x sh-toolbox.sh
 ./sh-toolbox.sh -i
 ./sh-toolbox.sh -c
 ```
-**✅ Done!**
+After running these commands, you'll be ready to use the toolbox!
+
 
 ## 🔧 Script Collection
 
@@ -59,7 +61,7 @@ chmod +x sh-toolbox.sh
 - `5`. [random-wall.sh](https://github.com/fr0st-iwnl/sh-toolbox/tree/master/Random%20Wallpaper#-random-wallsh) - A simple script to display random wallpapers from a specified directory.
 - `6`. [remind-me.sh](https://github.com/fr0st-iwnl/sh-toolbox/blob/master/Remind%20Me/README.md#-remind-mesh) - A script to set reminders with notifications and sound
 
-## ⌨️ Keybindings
+## 🎹 Keybindings
 
 `📁`. [Keybindings](https://github.com/fr0st-iwnl/sh-toolbox/tree/master/Keybindings) - Simple Macros for Arch Linux on KDE <strong>[BETA]</strong>
 
