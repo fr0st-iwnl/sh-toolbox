@@ -129,7 +129,6 @@ run_installer() {
     cp "$(pwd)/Weather/weather.sh" "$HOME/.local/share/bin/weather"
     chmod +x "$HOME/.local/share/bin/weather"
     show_success "Weather installed as 'weather'"
-    echo
 
     animate_progress "Installing Random Wallpaper tool"
     cp "$(pwd)/Random Wallpaper/random-wall.sh" "$HOME/.local/share/bin/random-wall"
