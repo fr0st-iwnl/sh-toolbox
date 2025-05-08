@@ -4,6 +4,8 @@ A simple tool to manage keyboard shortcuts on Linux using `sxhkd`, working with 
 
 ## 🎬 Showcase
 
+**[❗]** This video runs the version `1.0` so it’s a bit outdated.
+
 https://github.com/user-attachments/assets/37799c45-7aa3-4915-95ce-ef5ab9d5c3b6
 
 
@@ -43,6 +45,7 @@ https://github.com/user-attachments/assets/37799c45-7aa3-4915-95ce-ef5ab9d5c3b6
 -  `remove`      - Remove a keybinding
 -  `load`        - Load sh-toolbox default keybindings
 -  `reload`      - Reload sxhkd configuration
+-  `startup`     - Configure sxhkd startup options
 -  `help`        - Display this help information
 
 ## 🔧 Default sh-toolbox Keybindings
