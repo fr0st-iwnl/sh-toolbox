@@ -2,8 +2,12 @@
 
 A simple tool to manage keyboard shortcuts on Linux using `sxhkd`, working with both **X11** and **Wayland**. Easily set up key combos for any command you want.
 
+## 🎬 Showcase
 
-## 📋 Features
+https://github.com/user-attachments/assets/37799c45-7aa3-4915-95ce-ef5ab9d5c3b6
+
+
+## ✨ Features
 
 - **Simple Interface:** Easy-to-use commands for managing keyboard shortcuts
 - **Notification Support:** Optional desktop notifications when shortcuts are triggered
@@ -29,6 +33,8 @@ A simple tool to manage keyboard shortcuts on Linux using `sxhkd`, working with 
 ## 📝 Command Options
 
 ### Usage:
+
+
 `keybind` [command]
 
 ### Commands:
