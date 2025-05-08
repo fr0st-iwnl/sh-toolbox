@@ -7,7 +7,8 @@
 ENABLE_NOTIFICATIONS="true"
 
 # Notification cooldown in seconds (prevents notification spam)
-NOTIFICATION_COOLDOWN=0.5
+# Use integer value
+NOTIFICATION_COOLDOWN=1
 
 # Lockfile for notification rate limiting
 LOCKFILE="/tmp/volume_notification.lock"
@@ -31,16 +32,22 @@ show_notification() {
         return
     fi
     
-    # Check if lockfile exists and is recent
+    # Check for rate limiting
     if [ -f "$LOCKFILE" ]; then
         # Get the timestamp of the lockfile
-        lockfile_time=$(stat -c %Y "$LOCKFILE")
-        current_time=$(date +%s)
-        time_diff=$((current_time - lockfile_time))
-        
-        # If the lockfile is newer than NOTIFICATION_COOLDOWN, skip notification
-        if [ "$time_diff" -lt "$NOTIFICATION_COOLDOWN" ]; then
-            return
+        if command -v stat &> /dev/null; then
+            lockfile_time=$(stat -c %Y "$LOCKFILE" 2>/dev/null || echo 0)
+            current_time=$(date +%s)
+            
+            # Only do time check if we got valid times
+            if [ -n "$lockfile_time" ] && [ -n "$current_time" ]; then
+                time_diff=$((current_time - lockfile_time))
+                
+                # If the lockfile is newer than NOTIFICATION_COOLDOWN, skip notification
+                if [ "$time_diff" -lt "$NOTIFICATION_COOLDOWN" ]; then
+                    return
+                fi
+            fi
         fi
     fi
     
@@ -64,15 +71,9 @@ detect_audio_system() {
 
 # Function to decrease volume using Pipewire
 decrease_volume_pipewire() {
-    # Get current volume
-    current_volume=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | grep -oP 'Volume: \K[0-9.]+')
-    
     # Decrease volume by specified step
     wpctl set-volume @DEFAULT_AUDIO_SINK@ ${VOLUME_STEP}%-
     
-    # Get new volume level for notification
-    new_volume=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | grep -oP 'Volume: \K[0-9.]+')
-    new_volume_percent=$(echo "$new_volume * 100" | bc | cut -d. -f1)
     echo -e "${YELLOW}Volume decreased${NC}"
     show_notification "audio-volume-low" "Volume Down" "Volume decreased"
 }
@@ -85,8 +86,6 @@ decrease_volume_pulseaudio() {
     # Decrease by specified step
     pactl set-sink-volume "$default_sink" -${VOLUME_STEP}%
     
-    # Get new volume for notification
-    new_volume=$(pactl get-sink-volume "$default_sink" | grep -oP '\d+%' | head -n 1 | tr -d '%')
     echo -e "${YELLOW}Volume decreased${NC}"
     show_notification "audio-volume-low" "Volume Down" "Volume decreased"
 }

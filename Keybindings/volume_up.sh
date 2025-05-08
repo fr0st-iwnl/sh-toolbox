@@ -7,7 +7,8 @@
 ENABLE_NOTIFICATIONS="true"
 
 # Notification cooldown in seconds (prevents notification spam)
-NOTIFICATION_COOLDOWN=0.5
+# Use integer value
+NOTIFICATION_COOLDOWN=1
 
 # Lockfile for notification rate limiting
 LOCKFILE="/tmp/volume_notification.lock"
@@ -31,16 +32,22 @@ show_notification() {
         return
     fi
     
-    # Check if lockfile exists and is recent
+    # Check for rate limiting
     if [ -f "$LOCKFILE" ]; then
         # Get the timestamp of the lockfile
-        lockfile_time=$(stat -c %Y "$LOCKFILE")
-        current_time=$(date +%s)
-        time_diff=$((current_time - lockfile_time))
-        
-        # If the lockfile is newer than NOTIFICATION_COOLDOWN, skip notification
-        if [ "$time_diff" -lt "$NOTIFICATION_COOLDOWN" ]; then
-            return
+        if command -v stat &> /dev/null; then
+            lockfile_time=$(stat -c %Y "$LOCKFILE" 2>/dev/null || echo 0)
+            current_time=$(date +%s)
+            
+            # Only do time check if we got valid times
+            if [ -n "$lockfile_time" ] && [ -n "$current_time" ]; then
+                time_diff=$((current_time - lockfile_time))
+                
+                # If the lockfile is newer than NOTIFICATION_COOLDOWN, skip notification
+                if [ "$time_diff" -lt "$NOTIFICATION_COOLDOWN" ]; then
+                    return
+                fi
+            fi
         fi
     fi
     
@@ -64,28 +71,21 @@ detect_audio_system() {
 
 # Function to increase volume using Pipewire
 increase_volume_pipewire() {
-    # Get current volume
-    current_volume=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | grep -oP 'Volume: \K[0-9.]+')
-    
-    # Check if audio is muted first - unmute if needed
-    is_muted=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | grep -c MUTED)
-    if [ "$is_muted" -eq "1" ]; then
+    # Check if audio is muted - unmute if needed
+    if wpctl get-volume @DEFAULT_AUDIO_SINK@ | grep -q MUTED; then
         wpctl set-mute @DEFAULT_AUDIO_SINK@ 0
     fi
     
-    # Check if current volume is already at or near 100%
-    if (( $(echo "$current_volume >= 0.95" | bc -l) )); then
-        # If we're already at 95% or higher, set to exactly 100%
-        wpctl set-volume @DEFAULT_AUDIO_SINK@ 1.0
+    # Get current volume - without using floating point math
+    current_vol_text=$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
+    
+    # Check if already at max volume
+    if echo "$current_vol_text" | grep -q "Volume: 1.00"; then
         echo -e "${YELLOW}Volume at maximum: 100%${NC}"
         show_notification "audio-volume-high" "Volume" "Volume at maximum"
     else
         # Otherwise increase by specified step
         wpctl set-volume @DEFAULT_AUDIO_SINK@ ${VOLUME_STEP}%+
-        
-        # Get new volume level for notification
-        new_volume=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | grep -oP 'Volume: \K[0-9.]+')
-        new_volume_percent=$(echo "$new_volume * 100" | bc | cut -d. -f1)
         echo -e "${GREEN}Volume increased${NC}"
         show_notification "audio-volume-high" "Volume Up" "Volume increased"
     fi
@@ -96,17 +96,16 @@ increase_volume_pulseaudio() {
     # Get default sink (speaker/headphones)
     default_sink=$(pactl get-default-sink)
     
-    # Check if audio is muted first - unmute if needed
-    is_muted=$(pactl get-sink-mute "$default_sink" | grep -c "yes")
-    if [ "$is_muted" -eq "1" ]; then
+    # Check if audio is muted - unmute if needed
+    if pactl get-sink-mute "$default_sink" | grep -q "yes"; then
         pactl set-sink-mute "$default_sink" 0
     fi
     
     # Get current volume percentage
-    current_volume=$(pactl get-sink-volume "$default_sink" | grep -oP '\d+%' | head -n 1 | tr -d '%')
+    current_volume=$(pactl get-sink-volume "$default_sink" | grep -o '[0-9]*%' | head -n 1 | tr -d '%')
     
     # Check if volume is at or near 100%
-    if [ "$current_volume" -ge 95 ]; then
+    if [ -n "$current_volume" ] && [ "$current_volume" -ge 95 ]; then
         # Set volume to exactly 100%
         pactl set-sink-volume "$default_sink" 100%
         echo -e "${YELLOW}Volume at maximum: 100%${NC}"
@@ -114,9 +113,6 @@ increase_volume_pulseaudio() {
     else
         # Increase by specified step
         pactl set-sink-volume "$default_sink" +${VOLUME_STEP}%
-        
-        # Get new volume for notification
-        new_volume=$(pactl get-sink-volume "$default_sink" | grep -oP '\d+%' | head -n 1 | tr -d '%')
         echo -e "${GREEN}Volume increased${NC}"
         show_notification "audio-volume-high" "Volume Up" "Volume increased"
     fi

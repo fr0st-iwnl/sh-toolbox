@@ -6,7 +6,8 @@
 # Set to "true" to enable notifications, "false" to disable
 ENABLE_NOTIFICATIONS="true"
 
-# Notification cooldown in seconds (prevents notification spam)
+# Notification cooldown in seconds (prevents notification spam) 
+# Use integer value
 NOTIFICATION_COOLDOWN=0.2
 
 # Lockfile for notification rate limiting
@@ -28,16 +29,22 @@ show_notification() {
         return
     fi
     
-    # Check if lockfile exists and is recent
+    # Check for rate limiting
     if [ -f "$LOCKFILE" ]; then
         # Get the timestamp of the lockfile
-        lockfile_time=$(stat -c %Y "$LOCKFILE")
-        current_time=$(date +%s)
-        time_diff=$((current_time - lockfile_time))
-        
-        # If the lockfile is newer than NOTIFICATION_COOLDOWN, skip notification
-        if [ "$time_diff" -lt "$NOTIFICATION_COOLDOWN" ]; then
-            return
+        if command -v stat &> /dev/null; then
+            lockfile_time=$(stat -c %Y "$LOCKFILE" 2>/dev/null || echo 0)
+            current_time=$(date +%s)
+            
+            # Only do time check if we got valid times
+            if [ -n "$lockfile_time" ] && [ -n "$current_time" ]; then
+                time_diff=$((current_time - lockfile_time))
+                
+                # If the lockfile is newer than NOTIFICATION_COOLDOWN, skip notification
+                if [ "$time_diff" -lt "$NOTIFICATION_COOLDOWN" ]; then
+                    return
+                fi
+            fi
         fi
     fi
     
@@ -64,7 +71,7 @@ toggle_pipewire() {
     # Toggle mute status using wpctl
     wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
     
-    # Get current mute status
+    # Get new mute status
     is_muted=$(wpctl get-volume @DEFAULT_AUDIO_SOURCE@ | grep -c MUTED)
     
     if [ "$is_muted" -eq "1" ]; then
@@ -84,7 +91,7 @@ toggle_pulseaudio() {
     # Toggle mute status
     pactl set-source-mute "$default_source" toggle
     
-    # Get current mute status
+    # Get new mute status
     is_muted=$(pactl get-source-mute "$default_source" | grep -c "yes")
     
     if [ "$is_muted" -eq "1" ]; then
