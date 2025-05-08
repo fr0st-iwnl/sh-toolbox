@@ -1,21 +1,119 @@
 #!/bin/bash
 # Script to toggle audio output mute status on keypress
-# For Pipewire on Arch Linux/KDE
+# Supports both PulseAudio and Pipewire
 
-# Function to toggle audio output mute status
-toggle_audio_mute() {
-    # Toggle mute status using wpctl for audio output
-    wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+# Configuration
+# Set to "true" to enable notifications, "false" to disable
+ENABLE_NOTIFICATIONS="true"
+
+# Notification cooldown in seconds (prevents notification spam)
+NOTIFICATION_COOLDOWN=0.2
+
+# Lockfile for notification rate limiting
+LOCKFILE="/tmp/toggle_audio_notification.lock"
+
+# Colors for terminal output
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+# Function to show notification with rate limiting
+show_notification() {
+    local icon="$1"
+    local title="$2"
+    local message="$3"
     
-    # Get current mute status to provide notification
-    is_muted=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | grep -c MUTED)
+    # Only show notification if enabled and notify-send exists
+    if [ "$ENABLE_NOTIFICATIONS" != "true" ] || ! command -v notify-send &> /dev/null; then
+        return
+    fi
     
-    if [ "$is_muted" -eq "1" ]; then
-        notify-send -u normal -i audio-volume-muted "Audio" "Audio Muted" -t 1500
+    # Check if lockfile exists and is recent
+    if [ -f "$LOCKFILE" ]; then
+        # Get the timestamp of the lockfile
+        lockfile_time=$(stat -c %Y "$LOCKFILE")
+        current_time=$(date +%s)
+        time_diff=$((current_time - lockfile_time))
+        
+        # If the lockfile is newer than NOTIFICATION_COOLDOWN, skip notification
+        if [ "$time_diff" -lt "$NOTIFICATION_COOLDOWN" ]; then
+            return
+        fi
+    fi
+    
+    # Update lockfile timestamp
+    touch "$LOCKFILE"
+    
+    # Show notification
+    notify-send -u normal -i "$icon" "$title" "$message" -t 1500
+}
+
+# Detect audio system (Pipewire or PulseAudio)
+detect_audio_system() {
+    if command -v wpctl &> /dev/null; then
+        echo "pipewire"
+    elif command -v pactl &> /dev/null; then
+        echo "pulseaudio"
     else
-        notify-send -u normal -i audio-volume-high "Audio" "Audio Unmuted" -t 1500
+        echo "unknown"
     fi
 }
 
-# Execute the audio mute toggle function
-toggle_audio_mute
+# Function to toggle audio output mute status using Pipewire
+toggle_pipewire() {
+    # Toggle mute status using wpctl for audio output
+    wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+    
+    # Get current mute status
+    is_muted=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | grep -c MUTED)
+    
+    if [ "$is_muted" -eq "1" ]; then
+        echo -e "${RED}Audio Muted${NC}"
+        show_notification "audio-volume-muted" "Audio" "Audio Muted"
+    else
+        echo -e "${GREEN}Audio Unmuted${NC}"
+        show_notification "audio-volume-high" "Audio" "Audio Unmuted"
+    fi
+}
+
+# Function to toggle audio output mute status using PulseAudio
+toggle_pulseaudio() {
+    # Get default sink (speaker/headphones)
+    default_sink=$(pactl get-default-sink)
+    
+    # Toggle mute status
+    pactl set-sink-mute "$default_sink" toggle
+    
+    # Get current mute status
+    is_muted=$(pactl get-sink-mute "$default_sink" | grep -c "yes")
+    
+    if [ "$is_muted" -eq "1" ]; then
+        echo -e "${RED}Audio Muted${NC}"
+        show_notification "audio-volume-muted" "Audio" "Audio Muted"
+    else
+        echo -e "${GREEN}Audio Unmuted${NC}"
+        show_notification "audio-volume-high" "Audio" "Audio Unmuted"
+    fi
+}
+
+# Main function
+main() {
+    # Detect audio system
+    audio_system=$(detect_audio_system)
+    
+    case "$audio_system" in
+        "pipewire")
+            toggle_pipewire
+            ;;
+        "pulseaudio")
+            toggle_pulseaudio
+            ;;
+        *)
+            echo "Error: No compatible audio system found. Please install PulseAudio or Pipewire."
+            exit 1
+            ;;
+    esac
+}
+
+# Execute main function
+main
