@@ -1,0 +1,61 @@
+# 🎹 keybind.sh
+
+A simple tool to manage keyboard shortcuts on Linux using `sxhkd`, working with both **X11** and **Wayland**. Easily set up key combos for any command you want.
+
+
+## 📋 Features
+
+- **Simple Interface:** Easy-to-use commands for managing keyboard shortcuts
+- **Notification Support:** Optional desktop notifications when shortcuts are triggered
+- **Audio Controls:** Pre-configured shortcuts for audio management
+
+
+## 🚀 Getting Started
+
+1. Make sure `sxhkd` is installed:
+   ```bash
+   # Arch Linux
+   sudo pacman -S sxhkd
+   
+   # Debian/Ubuntu
+   sudo apt install sxhkd
+   
+   # Fedora
+   sudo dnf install sxhkd
+   ```
+
+2. Done! Now run `keybind help`
+
+## 📝 Command Options
+
+### Usage:
+`keybind` [command]
+
+### Commands:
+-  `list`        - List all configured keybindings
+-  `add`         - Add a new keybinding
+-  `remove`      - Remove a keybinding
+-  `load`        - Load sh-toolbox default keybindings
+-  `reload`      - Reload sxhkd configuration
+-  `help`        - Display this help information
+
+## 🔧 Default sh-toolbox Keybindings
+
+By default, the `keybind.sh` script includes optional audio control scripts that support both **Pipewire** and **PulseAudio**. When you run keybind load, the following keybindings are automatically set up:
+
+| Key Combination | Action | Script |
+|----------------|--------|--------|
+| `Insert` | Toggle microphone mute | `toggle_mic.sh` |
+| `Pause` | Toggle audio mute | `toggle_audio.sh` |
+| `Ctrl + Shift + Up` | Increase volume by 5% | `volume_up.sh` |
+| `Ctrl + Shift + Down` | Decrease volume by 5% | `volume_down.sh` |
+
+## ⚙️ Configuration
+
+The configuration files are stored in:
+- `~/.config/sh-toolbox/keybinds.conf` - Your keybinding definitions **(Use this file to configure your keybindings)**
+- `~/.config/sxhkd/sxhkdrc` - The generated sxhkd configuration
+
+## 🔗 Dependencies
+
+- **[sxhkd](https://github.com/baskerville/sxhkd)**: Simple X hotkey daemon
