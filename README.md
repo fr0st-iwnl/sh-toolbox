@@ -63,22 +63,23 @@ After running these commands, you'll be ready to use the toolbox!
 
 ## 🎹 Keybindings
 
-The `keybind.sh` script is something special! It makes setting up keyboard shortcuts super easy. With this simple tool, you can:
+The `keybind.sh` makes it simple to set up keyboard shortcuts using `sxhkd`, compatible with both **X11** and **Wayland**. This lightweight tool lets you:
 
 - Add custom keyboard shortcuts for any command
-- Manage all your shortcuts in one place
+- Keep all your keybinds organized in one place
 - Get notifications when shortcuts are triggered
-- Works perfectly with the audio control scripts
 
-To load the default **sh-toolbox** keybindings, run: `keybind load`
+To load the default **sh-toolbox** keybindings, just run: `keybind load`
 
-- `toggle_mic.sh` - Mutes/Unmutes your mic on **Insert**
-- `toggle_audio.sh` - Mutes/Unmutes your audio on **Pause/Break**
-- `volume_up.sh` - Increases audio volume by 5% on **Ctrl + Shift + Up**
-- `volume_down.sh` - Decreases audio volume by 5% on **Ctrl + Shift + Down**
+| Key Combination | Action | Script |
+|----------------|--------|--------|
+| `Insert` | Toggle microphone mute | `toggle_mic.sh` |
+| `Pause` | Toggle audio mute | `toggle_audio.sh` |
+| `Ctrl + Shift + Up` | Increase volume by 5% | `volume_up.sh` |
+| `Ctrl + Shift + Down` | Decrease volume by 5% | `volume_down.sh` |
 
 
-Use `keybind add` to create a shortcut, and `keybind list` to view all your bindings.
+You can add new shortcuts with `keybind add`, or view existing ones with `keybind list`.
 <br>
 <br>
 For more details, read the full documentation on this tool.
