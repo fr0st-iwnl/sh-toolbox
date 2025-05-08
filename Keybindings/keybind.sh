@@ -76,7 +76,7 @@ show_keybind_help() {
     echo -e "  ${GREEN}help${NC}                     - Display this help information"
     echo -e "  ${GREEN}debug [command]${NC}          - Run any command in debug mode"
     echo
-    echo -e "${BOLD}${YELLOW}Note:${NC} Keybindings are managed through sxhkd. Make sure sxhkd is installed and running."
+    echo -e "${YELLOW}[?] Note:${NC} Keybindings are managed through sxhkd. Make sure sxhkd is installed and running."
     echo
 }
 
@@ -161,6 +161,7 @@ add_keybinding() {
     
     # Get key combination
     echo -e "${BOLD}${BLUE}╭─ Enter the key combination ${NC}${YELLOW}(e.g., super + f)${NC}"
+    echo -e "${BLUE}│ ${YELLOW}Note: The '${MID_BLUE}super${YELLOW}' key is usually the ${MID_BLUE}Windows key${YELLOW} on keyboards.${NC}"
     echo -ne "${BOLD}${BLUE}╰─➤ ${NC}"
     read -r keys_input
     
