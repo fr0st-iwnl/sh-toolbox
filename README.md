@@ -60,10 +60,11 @@ After running these commands, you'll be ready to use the toolbox!
 - `4`. [netinfo.sh](https://github.com/fr0st-iwnl/sh-toolbox/tree/master/NetInfo#-netinfosh) - A simple script that displays detailed network information, including IP addresses, connection latency, and internet speeds in the terminal using `speedtest-cli`.
 - `5`. [random-wall.sh](https://github.com/fr0st-iwnl/sh-toolbox/tree/master/Random%20Wallpaper#-random-wallsh) - A simple script to display random wallpapers from a specified directory.
 - `6`. [remind-me.sh](https://github.com/fr0st-iwnl/sh-toolbox/blob/master/Remind%20Me/README.md#-remind-mesh) - A script to set reminders with notifications and sound
+- `7`. [keybind.sh](https://github.com/fr0st-iwnl/sh-toolbox/blob/master/Keybindings/README.md#-keybindsh) - A tool to manage keybindings using `sxhkd`.
 
 ## 🎹 Keybindings
 
-The `keybind.sh` makes it simple to set up keyboard shortcuts using `sxhkd`, compatible with both **X11** and **Wayland**. This lightweight tool lets you:
+The [keybind.sh](https://github.com/fr0st-iwnl/sh-toolbox/blob/master/Keybindings/README.md#-keybindsh) makes it simple to set up keyboard shortcuts using `sxhkd`, compatible with both **X11** and **Wayland**. This lightweight tool lets you:
 
 - Add custom keyboard shortcuts for any command
 - Keep all your keybinds organized in one place
