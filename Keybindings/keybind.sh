@@ -162,6 +162,7 @@ add_keybinding() {
     # Get key combination
     echo -e "${BOLD}${BLUE}╭─ Enter the key combination ${NC}${YELLOW}(e.g., super + f)${NC}"
     echo -e "${BLUE}│ ${YELLOW}Note: The '${MID_BLUE}super${YELLOW}' key is usually the ${MID_BLUE}Windows key${YELLOW} on keyboards.${NC}"
+    echo -e "${BLUE}│ "
     echo -ne "${BOLD}${BLUE}╰─➤ ${NC}"
     read -r keys_input
     
