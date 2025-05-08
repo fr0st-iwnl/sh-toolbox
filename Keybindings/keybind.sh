@@ -83,11 +83,13 @@ show_keybind_help() {
 # Function to check if sxhkd is installed
 check_sxhkd() {
     if ! command -v sxhkd &> /dev/null; then
+        echo
         echo -e "${RED}[✗] sxhkd is not installed.${NC}" >&2
         echo -e "${YELLOW}Please install sxhkd to use the keybinding manager:${NC}"
         echo -e "  - For Arch Linux: ${GREEN}sudo pacman -S sxhkd${NC}"
         echo -e "  - For Debian/Ubuntu: ${GREEN}sudo apt install sxhkd${NC}"
         echo -e "  - For Fedora: ${GREEN}sudo dnf install sxhkd${NC}"
+        echo
         return 1
     fi
     
