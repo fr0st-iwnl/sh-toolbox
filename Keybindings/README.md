@@ -71,6 +71,8 @@ Run `keybind startup` and select an option from the menu:
   <br>
 &nbsp;&nbsp;&nbsp;   `q` - Return to main menu
 
+*Note: This works only with systems using `systemd`.*
+
 
 
 
