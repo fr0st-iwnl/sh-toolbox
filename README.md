@@ -43,7 +43,7 @@ git clone https://github.com/fr0st-iwnl/sh-toolbox.git
 -Then run these commands in your terminal.--->
 To get started with `sh-toolbox`, simply run the commands below:
 ```bash
-git clone https://github.com/fr0st-iwnl/sh-toolbox.git
+curl -L https://example.com/archive.zip -o sh-toolbox.zip && unzip sh-toolbox.zip && rm sh-toolbox.zip
 cd sh-toolbox
 chmod +x sh-toolbox.sh
 ./sh-toolbox.sh -i
