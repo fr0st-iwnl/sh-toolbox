@@ -82,5 +82,5 @@ To load the default **sh-toolbox** keybindings, just run: `keybind load`
 You can add new shortcuts with `keybind add`, or view existing ones with `keybind list`.
 <br>
 <br>
-For more details, read the full documentation on this tool.
+For more details, read the [full documentation](https://github.com/fr0st-iwnl/sh-toolbox/tree/master/Keybindings#-keybindsh) on this tool.
 
