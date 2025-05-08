@@ -60,6 +60,7 @@ By default, the `keybind.sh` script includes optional audio control scripts that
 
 The configuration files are stored in:
 - `~/.config/sh-toolbox/keybinds.conf` - Your keybinding definitions **(Use this file to configure your keybindings)**
+<br> After making changes, don't forget to run `keybind reload` to apply the new configuration.
 - `~/.config/sxhkd/sxhkdrc` - The generated sxhkd configuration
 
 ## 🔗 Dependencies
