@@ -48,7 +48,7 @@ https://github.com/user-attachments/assets/37799c45-7aa3-4915-95ce-ef5ab9d5c3b6
 -  `startup`     - Configure sxhkd startup options
 -  `help`        - Display this help information
 
-## 🔧 Default sh-toolbox Keybindings
+## ⌨️ Default sh-toolbox Keybindings
 
 By default, the `keybind.sh` script includes optional audio control scripts that support both **Pipewire** and **PulseAudio**. When you run keybind load, the following keybindings are automatically set up:
 
@@ -58,6 +58,21 @@ By default, the `keybind.sh` script includes optional audio control scripts that
 | `Pause` | Toggle audio mute | `toggle_audio.sh` |
 | `Ctrl + Shift + Up` | Increase volume by 5% | `volume_up.sh` |
 | `Ctrl + Shift + Down` | Decrease volume by 5% | `volume_down.sh` |
+
+## ⚙️ Configure Sxhkd Startup 
+
+Run `keybind startup` and select an option from the menu:
+
+**Options:**
+  <br>
+&nbsp;&nbsp;&nbsp;  `1` - Enable sxhkd startup on login
+  <br>
+&nbsp;&nbsp;&nbsp;   `2` - Disable sxhkd startup on login
+  <br>
+&nbsp;&nbsp;&nbsp;   `q` - Return to main menu
+
+
+
 
 ## ⚙️ Configuration
 
