@@ -200,8 +200,9 @@ run_uninstaller() {
     echo -e "${NC}"
 
     # Confirm uninstallation
-    echo -e "${YELLOW}This will remove all sh-toolbox scripts from your system.${NC}"
-    echo -e "${YELLOW}Are you sure you want to continue? [y/N]${NC}"
+    echo -e "${GREEN} This will remove all sh-toolbox scripts from your system.${NC}"
+    echo -e "${YELLOW}╭─ Are you sure you want to continue? [y/N]${NC}"
+    echo -ne "${BOLD}${YELLOW}╰─➤ ${NC}"
     read -r answer
     if [[ ! "$answer" =~ ^[Yy]$ ]]; then
         echo -e "${GREEN}Uninstallation cancelled.${NC}"
@@ -222,6 +223,21 @@ run_uninstaller() {
     rm -f "$HOME/.local/share/bin/keybind" 2>/dev/null
     rm -rf "$HOME/.local/share/bin/Keybindings" 2>/dev/null
     show_success "Removed all sh-toolbox scripts"
+    
+    # Remove config directories
+    animate_progress "Removing configuration files"
+    
+    # Remove sxhkd directory completely
+    if [ -d "$HOME/.config/sxhkd" ]; then
+        rm -rf "$HOME/.config/sxhkd" 2>/dev/null
+    fi
+    
+    # Remove sh-toolbox config directory
+    if [ -d "$HOME/.config/sh-toolbox" ]; then
+        rm -rf "$HOME/.config/sh-toolbox" 2>/dev/null
+    fi
+    
+    show_success "Removed all configuration files"
 
     # Clean up PATH in shell configuration if bin directory is empty
     if [ -z "$(ls -A "$HOME/.local/share/bin" 2>/dev/null)" ]; then
@@ -249,7 +265,7 @@ run_uninstaller() {
     fi
 
     echo
-    echo -e "${BOLD}${RED}┌───────────────────────────────────┐"
+    echo -e "${BOLD}${CYAN}┌───────────────────────────────────┐"
     echo -e "│      Uninstallation Complete!     │"
     echo -e "└───────────────────────────────────┘"
     echo -e "${NC}"
