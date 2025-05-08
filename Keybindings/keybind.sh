@@ -31,6 +31,7 @@ KEYBINDS_FILE="$CONFIG_DIR/keybinds.conf"
 SXHKD_CONFIG="$HOME/.config/sxhkd/sxhkdrc"
 SXHKD_CONFIG_BACKUP="$HOME/.config/sxhkd/sxhkdrc.backup"
 SXHKD_TOOLBOX_SECTION="$CONFIG_DIR/sxhkd-section.conf"
+SYSTEMD_SERVICE_FILE="$HOME/.config/systemd/user/sxhkd.service"
 
 # Global debug flag
 DEBUG_MODE=false
@@ -73,6 +74,7 @@ show_keybind_help() {
     echo -e "  ${GREEN}remove${NC}                   - Remove a keybinding"
     echo -e "  ${GREEN}load${NC}                     - Load sh-toolbox default keybindings"
     echo -e "  ${GREEN}reload${NC}                   - Reload sxhkd configuration"
+    echo -e "  ${GREEN}startup${NC}                  - Configure sxhkd startup options"
     echo -e "  ${GREEN}help${NC}                     - Display this help information"
     echo -e "  ${GREEN}debug [command]${NC}          - Run any command in debug mode"
     echo
@@ -709,6 +711,7 @@ load_default_keybindings() {
         echo -e "${BOLD}${BLUE}Warning:${NC}"
         echo -e "${YELLOW}[!] You already have keybindings configured in sh-toolbox.${NC}"
         echo -e "${YELLOW}    These will be removed and replaced with the default configuration.${NC}"
+        echo
     fi
     
     #if [ "$existing_sxhkd" = true ]; then
@@ -774,6 +777,127 @@ load_default_keybindings() {
     return 0
 }
 
+# Function to configure sxhkd startup options
+configure_startup() {
+    echo -e "${BOLD}${MID_BLUE}"
+    echo "┌───────────────────────────────────┐"
+    echo "│      Configure Sxhkd Startup      │"
+    echo "└───────────────────────────────────┘"
+    echo -e "${NC}"
+    
+    # Create systemd user directory if it doesn't exist
+    mkdir -p "$(dirname "$SYSTEMD_SERVICE_FILE")"
+    
+    # Check current startup status
+    local sxhkd_enabled=false
+    if systemctl --user is-enabled sxhkd.service &>/dev/null; then
+        sxhkd_enabled=true
+        echo -e "${BOLD}${GREEN}Sxhkd is currently configured to start automatically on login.${NC}"
+    else
+        echo -e "${BOLD}${YELLOW}Sxhkd is NOT currently configured to start automatically on login.${NC}"
+    fi
+    
+    echo
+    echo -e "${BOLD}${BLUE}Options:${NC}"
+    echo -e "  ${GREEN}1${NC} - Enable sxhkd startup on login"
+    echo -e "  ${GREEN}2${NC} - Disable sxhkd startup on login"
+    echo -e "  ${GREEN}q${NC} - Return to main menu"
+    echo
+    
+    echo -e "${BOLD}${BLUE}╭─ Choose an option [1/2/q]:${NC}"
+    echo -ne "${BOLD}${BLUE}╰─➤ ${NC}"
+    read -r option
+    
+    case "$option" in
+        "1")
+            # Create systemd service file if it doesn't exist
+            if [ ! -f "$SYSTEMD_SERVICE_FILE" ]; then
+                echo
+                echo -e "${YELLOW}Creating systemd service file...${NC}"
+                
+                cat > "$SYSTEMD_SERVICE_FILE" << EOF
+[Unit]
+Description=Simple X Hotkey Daemon
+Documentation=man:sxhkd(1)
+
+[Service]
+ExecStart=/usr/bin/sxhkd
+ExecReload=/usr/bin/kill -SIGUSR1 \$MAINPID
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+EOF
+
+                chmod 644 "$SYSTEMD_SERVICE_FILE"
+            fi
+            
+            echo
+            echo -e "${YELLOW}Enabling sxhkd service...${NC}"
+            systemctl --user daemon-reload
+            systemctl --user enable sxhkd.service
+            
+            # Start the service if it's not already running
+            if ! systemctl --user is-active sxhkd.service &>/dev/null; then
+                echo -e "${YELLOW}Starting sxhkd service...${NC}"
+                systemctl --user start sxhkd.service
+            fi
+            
+            echo
+            echo -e "${GREEN}[✓] Sxhkd will now start automatically on login.${NC}"
+            ;;
+            
+        "2")
+            echo
+            if [ -f "$SYSTEMD_SERVICE_FILE" ] && systemctl --user is-enabled sxhkd.service &>/dev/null; then
+                echo -e "${YELLOW}Disabling sxhkd service...${NC}"
+                systemctl --user disable sxhkd.service
+                echo
+                echo -e "${GREEN}[✓] Sxhkd will no longer start automatically on login.${NC}"
+                
+                # Ask if user wants to stop the current session
+                echo
+                echo -e "${BOLD}${BLUE}╭─ Do you want to stop the currently running sxhkd session? [y/N]:${NC}"
+                echo -ne "${BOLD}${BLUE}╰─➤ ${NC}"
+                read -r stop_option
+                
+                if [[ "$stop_option" =~ ^[Yy]$ ]]; then
+                    echo -e "${YELLOW}Stopping sxhkd service...${NC}"
+                    systemctl --user stop sxhkd.service
+                    echo -e "${GREEN}[✓] Sxhkd service stopped.${NC}"
+                fi
+            else
+                # Even if service is not enabled, check if it's running and offer to stop it
+                if systemctl --user is-active sxhkd.service &>/dev/null; then
+                    echo -e "${YELLOW}Sxhkd is running but not configured for startup.${NC}"
+                    echo
+                    echo -e "${BOLD}${BLUE}╭─ Do you want to stop the currently running sxhkd session? [y/N]:${NC}"
+                    echo -ne "${BOLD}${BLUE}╰─➤ ${NC}"
+                    read -r stop_option
+                    
+                    if [[ "$stop_option" =~ ^[Yy]$ ]]; then
+                        echo -e "${YELLOW}Stopping sxhkd service...${NC}"
+                        systemctl --user stop sxhkd.service
+                        echo -e "${GREEN}[✓] Sxhkd service stopped.${NC}"
+                    fi
+                else
+                    echo -e "${YELLOW}Sxhkd is not configured for startup. No changes needed.${NC}"
+                fi
+            fi
+            ;;
+            
+        "q"|"")
+            ;;
+            
+        *)
+            echo
+            echo -e "${RED}[✗] Invalid option.${NC}"
+            ;;
+    esac
+    
+    echo
+}
+
 # Main function to handle keybinding commands
 handle_keybind() {
     # Create config directories if they don't exist, but don't load anything yet
@@ -822,6 +946,9 @@ handle_keybind() {
             reload_sxhkd
             echo -e "${GREEN}[✓] sxhkd configuration reloaded.${NC}"
             echo
+            ;;
+        "startup")
+            configure_startup
             ;;
         "help")
             show_keybind_help

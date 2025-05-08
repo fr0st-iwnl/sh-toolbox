@@ -211,6 +211,39 @@ run_uninstaller() {
 
     echo
 
+    # Disable and remove systemd service for sxhkd if it exists
+    animate_progress "Checking sxhkd systemd service"
+    SYSTEMD_SERVICE_FILE="$HOME/.config/systemd/user/sxhkd.service"
+    if [ -f "$SYSTEMD_SERVICE_FILE" ]; then
+        echo -e "${YELLOW}Found sxhkd systemd service. Disabling and removing...${NC}"
+        
+        # Stop the service if it's running
+        if systemctl --user is-active sxhkd.service &>/dev/null; then
+            echo -e "${YELLOW}Stopping sxhkd service...${NC}"
+            systemctl --user stop sxhkd.service &>/dev/null
+        fi
+        
+        # Try to disable the service
+        systemctl --user disable sxhkd.service &>/dev/null
+        
+        # Then remove the service file
+        rm -f "$SYSTEMD_SERVICE_FILE" &>/dev/null
+        
+        # Clean up the wants directory if it's empty
+        rmdir --ignore-fail-on-non-empty "$HOME/.config/systemd/user/default.target.wants" &>/dev/null
+        
+        show_success "Removed sxhkd systemd service"
+    else
+        # Even if the service file doesn't exist, check if the service is running and stop it
+        if systemctl --user is-active sxhkd.service &>/dev/null; then
+            echo -e "${YELLOW}Stopping running sxhkd service...${NC}"
+            systemctl --user stop sxhkd.service &>/dev/null
+            show_success "Stopped sxhkd service"
+        else
+            show_success "No sxhkd systemd service found"
+        fi
+    fi
+
     # Remove scripts from bin directory
     animate_progress "Removing sh-toolbox scripts"
     rm -f "$HOME/.local/share/bin/sh-toolbox" 2>/dev/null
