@@ -49,8 +49,9 @@ show_help() {
     echo -e "  ${GREEN}-h, --help${NC}      - Display this help menu"
     echo -e "  ${GREEN}-i, --install${NC}   - Run the sh-toolbox installer"
     echo -e "  ${GREEN}-c, --commands${NC}  - Display available commands"
+    echo -e "  ${GREEN}-k, --keybind${NC}   - Manage keybindings using sxhkd"
     echo -e "  ${GREEN}-u, --uninstall${NC} - Uninstall sh-toolbox"
-    echo
+    echo 
 }
 
 # Animation function
@@ -85,7 +86,7 @@ run_installer() {
     echo -e "${NC}"
 
     # Check if running from the correct directory
-    if [ ! -d "NetInfo" ] || [ ! -d "Quotes" ] || [ ! -d "Remind Me" ] || [ ! -d "Weather" ] || [ ! -d "System Update" ] || [ ! -d "Random Wallpaper" ]; then
+    if [ ! -d "NetInfo" ] || [ ! -d "Quotes" ] || [ ! -d "Remind Me" ] || [ ! -d "Weather" ] || [ ! -d "System Update" ] || [ ! -d "Random Wallpaper" ] || [ ! -d "Keybindings" ]; then
         show_error "Missing required directories. Please run this script from the sh-toolbox root directory"
         exit 1
     fi
@@ -134,6 +135,25 @@ run_installer() {
     cp "$(pwd)/Random Wallpaper/random-wall.sh" "$HOME/.local/share/bin/random-wall"
     chmod +x "$HOME/.local/share/bin/random-wall"
     show_success "Random Wallpaper installed as 'random-wall'"
+    
+    animate_progress "Installing Keybind tool"
+    cp "$(pwd)/Keybindings/keybind.sh" "$HOME/.local/share/bin/keybind"
+    chmod +x "$HOME/.local/share/bin/keybind"
+    show_success "Keybind tool installed as 'keybind'"
+    
+    # Create Keybindings directory in the bin location
+    animate_progress "Installing Keybinding scripts"
+    mkdir -p "$HOME/.local/share/bin/Keybindings"
+    
+    # Copy the required keybinding utility scripts
+    cp "$(pwd)/Keybindings/toggle_mic.sh" "$HOME/.local/share/bin/Keybindings/"
+    cp "$(pwd)/Keybindings/toggle_audio.sh" "$HOME/.local/share/bin/Keybindings/"
+    cp "$(pwd)/Keybindings/volume_up.sh" "$HOME/.local/share/bin/Keybindings/"
+    cp "$(pwd)/Keybindings/volume_down.sh" "$HOME/.local/share/bin/Keybindings/"
+    
+    # Make them executable
+    chmod +x "$HOME/.local/share/bin/Keybindings/"*.sh
+    show_success "Keybinding utility scripts installed"
     echo
 
     # 3. Update PATH in shell configuration
@@ -199,6 +219,8 @@ run_uninstaller() {
     rm -f "$HOME/.local/share/bin/update" 2>/dev/null
     rm -f "$HOME/.local/share/bin/weather" 2>/dev/null
     rm -f "$HOME/.local/share/bin/random-wall" 2>/dev/null
+    rm -f "$HOME/.local/share/bin/keybind" 2>/dev/null
+    rm -rf "$HOME/.local/share/bin/Keybindings" 2>/dev/null
     show_success "Removed all sh-toolbox scripts"
 
     # Clean up PATH in shell configuration if bin directory is empty
@@ -237,6 +259,49 @@ run_uninstaller() {
     echo
 }
 
+# Function to run a command
+run_command() {
+    command_to_run="$1"
+    
+    if [ -z "$command_to_run" ]; then
+        echo -e "${RED}[✗] No command provided.${NC}" >&2
+        return 1
+    fi
+    
+    # Check if it's a simple command (single word)
+    if [[ "$command_to_run" =~ ^[a-zA-Z0-9_\-]+$ ]]; then
+        # Check if it exists as an application
+        if ! command -v "$command_to_run" &> /dev/null; then
+            echo -e "${YELLOW}[!] Warning: '$command_to_run' does not appear to be installed or in your PATH.${NC}"
+            echo -e "${YELLOW}It may not work unless it's a built-in shell command or script.${NC}"
+            echo -e "${BOLD}Continue anyway? [Y/n]:${NC}"
+            read -r continue_anyway
+            if [[ "$continue_anyway" =~ ^[Nn]$ ]]; then
+                echo -e "${RED}[✗] Command execution cancelled.${NC}" >&2
+                return 1
+            fi
+        else
+            echo -e "${GREEN}[✓] Found '$command_to_run' in your PATH.${NC}"
+        fi
+    fi
+    
+    # Ask about notification
+    echo -e "${YELLOW}Would you like to receive a notification when the command runs? [y/N]:${NC}"
+    read -r notify_choice
+    
+    if [[ "$notify_choice" =~ ^[Yy]$ ]] && command -v notify-send &> /dev/null; then
+        # Run with notification
+        notify-send "Running command" "$command_to_run"
+        eval "$command_to_run"
+    else
+        # Run without notification
+        eval "$command_to_run"
+    fi
+    
+    echo -e "${GREEN}[✓] Executed: $command_to_run${NC}"
+    return 0
+}
+
 # Main function to process arguments
 main() {
     # Process arguments
@@ -250,8 +315,37 @@ main() {
         -u|--uninstall)
             run_uninstaller
             ;;
+        -k|--keybind)
+            # Run keybind manager with remaining arguments
+            shift
+            # Determine if we're running from installed or local
+            if [[ "$(realpath "$0")" == *"/.local/share/bin/"* ]]; then
+                # We're running from the installed location
+                # Set the script directory to the current repo directory
+                repo_dir="$(realpath "$(dirname "$0")")"
+                # Find the Keybindings directory from the current source tree
+                if [ -d "$repo_dir/Keybindings" ]; then
+                    # Installed version has keybinding scripts in the same directory
+                    KEYBIND_SCRIPTS_DIR="$repo_dir/Keybindings" "$HOME/.local/share/bin/keybind" "$@"
+                elif [ -d "/usr/local/share/sh-toolbox/Keybindings" ]; then
+                    # Check system-wide installation location
+                    KEYBIND_SCRIPTS_DIR="/usr/local/share/sh-toolbox/Keybindings" "$HOME/.local/share/bin/keybind" "$@"
+                elif [ -d "$HOME/.local/share/sh-toolbox/Keybindings" ]; then
+                    # Check user-specific installation location
+                    KEYBIND_SCRIPTS_DIR="$HOME/.local/share/sh-toolbox/Keybindings" "$HOME/.local/share/bin/keybind" "$@"
+                else
+                    # Last resort - use the directory containing the keybind script
+                    keybind_script_dir="$(dirname "$(realpath "$HOME/.local/share/bin/keybind")")"
+                    KEYBIND_SCRIPTS_DIR="$keybind_script_dir" "$HOME/.local/share/bin/keybind" "$@"
+                fi
+            else
+                # We're running from the repository, get the absolute path
+                repo_dir="$(realpath "$(dirname "$0")")"
+                KEYBIND_SCRIPTS_DIR="$repo_dir/Keybindings" "$repo_dir/Keybindings/keybind.sh" "$@"
+            fi
+            ;;
         -c|--commands)
-            # Show only the commands without welcome message
+            # Only show commands, remove ability to run them
             echo
             echo -e "${BOLD}${BLUE}Available Commands:${NC}"
             echo
@@ -259,10 +353,12 @@ main() {
             echo -e "  ${GREEN}update${NC}     - Update system packages (Arch Linux with AUR and Flatpak support)"
             echo -e "  ${GREEN}weather${NC}    - Show current weather information for your location"
             echo -e "  ${GREEN}netinfo${NC}    - Display detailed network information (IP, speeds, latency)"
-            echo -e " ${GREEN}random-wall${NC} - Set a random wallpaper from a directory"
+            echo -e "  ${GREEN}random-wall${NC} - Set a random wallpaper from a directory"
             echo -e "  ${GREEN}remind-me${NC}  - Set reminders for yourself"
+            echo -e "  ${GREEN}keybind${NC}    - Manage keybindings using sxhkd"
             echo
             ;;
+        
         *)
             # Display welcome message and brief info for no arguments
             if [ $# -eq 0 ]; then
