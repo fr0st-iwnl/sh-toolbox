@@ -63,5 +63,23 @@ After running these commands, you'll be ready to use the toolbox!
 
 ## 🎹 Keybindings
 
-`📁`. [Keybindings](https://github.com/fr0st-iwnl/sh-toolbox/tree/master/Keybindings) - Simple Macros for Arch Linux on KDE <strong>[BETA]</strong>
+The `keybind.sh` script is something special! It makes setting up keyboard shortcuts super easy. With this simple tool, you can:
+
+- Add custom keyboard shortcuts for any command
+- Manage all your shortcuts in one place
+- Get notifications when shortcuts are triggered
+- Works perfectly with the audio control scripts
+
+To load the default **sh-toolbox** keybindings, run: `keybind load`
+
+- `toggle_mic.sh` - Mutes/Unmutes your mic on **Insert**
+- `toggle_audio.sh` - Mutes/Unmutes your audio on **Pause/Break**
+- `volume_up.sh` - Increases audio volume by 5% on **Ctrl + Shift + Up**
+- `volume_down.sh` - Decreases audio volume by 5% on **Ctrl + Shift + Down**
+
+
+Use `keybind add` to create a shortcut, and `keybind list` to view all your bindings.
+<br>
+<br>
+For more details, read the full documentation on this tool.
 
