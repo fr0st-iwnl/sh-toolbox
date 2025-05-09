@@ -6,31 +6,9 @@
 
 <p align="center">
 <a href="#-installation">Installation</a> •
-<a href="#-features">Features</a> •
   <a href="#-script-collection">Script Collection</a> •
 <a href="#-keybindings">Keybindings</a>
 </p>
-
-
-## ✨ Features
-
-- **Works Everywhere:**
-  - Runs on most Linux systems without problems
-
-- **Easy to Use:**
-  - Quick setup with just a few commands
-  - Consistent UI with helpful notifications
-  - Simple, clean code
-
-- **Pick What You Need:**
-  - Use only the scripts you want
-  - Easy to change for your needs
-  - Light on system resources
-
-- **Set It and Forget It:**
-  - Automate routine tasks with minimal configuration
-  - Works well with keyboard shortcuts
-  - Flexible enough to fit into your existing workflow
 
 
 
