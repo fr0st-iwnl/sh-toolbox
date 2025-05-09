@@ -565,19 +565,47 @@ generate_sxhkd_config() {
 
 # Function to reload sxhkd
 reload_sxhkd() {
+    echo
     # Check if sxhkd is running
     if pgrep -x sxhkd > /dev/null; then
-        echo
         echo -e "${YELLOW}[>>] Reloading sxhkd configuration...${NC}"
+        
+        # Use the signal method - most reliable
+        debug_print "Reloading sxhkd via signal"
         pkill -USR1 sxhkd
-        # echo -e "${GREEN}[✓] sxhkd configuration reloaded.${NC}"
+        
+        # Verify sxhkd is still running after reload
+        sleep 1
+        if ! pgrep -x sxhkd > /dev/null; then
+            echo -e "${RED}[✗] sxhkd stopped after reload attempt. Restarting...${NC}"
+            sxhkd >/dev/null 2>&1 &
+            disown
+            
+            sleep 1
+            if pgrep -x sxhkd > /dev/null; then
+                echo -e "${GREEN}[✓] sxhkd restarted successfully.${NC}"
+            else
+                echo -e "${RED}[✗] Failed to restart sxhkd. Please start it manually.${NC}"
+            fi
+        else
+            debug_print "sxhkd still running after reload"
+        fi
     else
-        echo
         echo -e "${YELLOW}sxhkd is not running. Starting sxhkd...${NC}"
-        sxhkd &
-        echo -e "${GREEN}[✓] sxhkd started.${NC}"
-        echo
+        
+        # Direct start - most reliable method
+        sxhkd >/dev/null 2>&1 &
+        disown
+        
+        sleep 1
+        if pgrep -x sxhkd > /dev/null; then
+            echo -e "${GREEN}[✓] sxhkd started.${NC}"
+        else
+            echo -e "${RED}[✗] Failed to start sxhkd. Please check for errors:${NC}"
+            echo -e "${YELLOW}Try running 'sxhkd -v' manually to see error messages.${NC}"
+        fi
     fi
+    echo
 }
 
 # Function to load default keybindings
@@ -777,6 +805,34 @@ load_default_keybindings() {
     return 0
 }
 
+# Function to stop sxhkd completely
+stop_sxhkd() {
+    echo -e "${YELLOW}Stopping sxhkd...${NC}"
+    
+    # Try systemctl first if the service is active
+    systemctl --user stop sxhkd.service 2>/dev/null
+    
+    # Then use pkill regardless
+    pkill -x sxhkd 2>/dev/null
+    
+    # Wait a moment and check
+    sleep 1
+    if pgrep -x sxhkd > /dev/null; then
+        echo -e "${YELLOW}Using force to stop sxhkd...${NC}"
+        pkill -9 -x sxhkd 2>/dev/null
+        sleep 1
+        
+        # Final check
+        if pgrep -x sxhkd > /dev/null; then
+            echo -e "${RED}[✗] Failed to stop sxhkd completely.${NC}"
+            return 1
+        fi
+    fi
+    
+    echo -e "${GREEN}[✓] Sxhkd stopped.${NC}"
+    return 0
+}
+
 # Function to configure sxhkd startup options
 configure_startup() {
     echo -e "${BOLD}${MID_BLUE}"
@@ -790,11 +846,22 @@ configure_startup() {
     
     # Check current startup status
     local sxhkd_enabled=false
+    local sxhkd_active=false
+    
     if systemctl --user is-enabled sxhkd.service &>/dev/null; then
         sxhkd_enabled=true
-        echo -e "${BOLD}${GREEN}Sxhkd is currently configured to start automatically on login.${NC}"
+        echo -e "${BOLD}${GREEN}[✓] Sxhkd is currently configured to start automatically on login.${NC}"
     else
-        echo -e "${BOLD}${YELLOW}Sxhkd is NOT currently configured to start automatically on login.${NC}"
+        echo -e "${BOLD}${YELLOW}[✗] Sxhkd is NOT currently configured to start automatically on login.${NC}"
+    fi
+    
+    # Check if sxhkd is actually running
+    if pgrep -x sxhkd > /dev/null; then
+        sxhkd_active=true
+        echo -e "${BOLD}${GREEN}[✓] Sxhkd is currently running.${NC}"
+    else
+        sxhkd_active=false
+        echo -e "${BOLD}${YELLOW}[✗] Sxhkd is NOT currently running.${NC}"
     fi
     
     echo
@@ -819,11 +886,13 @@ configure_startup() {
 [Unit]
 Description=Simple X Hotkey Daemon
 Documentation=man:sxhkd(1)
+After=graphical-session.target
 
 [Service]
 ExecStart=/usr/bin/sxhkd
 ExecReload=/usr/bin/kill -SIGUSR1 \$MAINPID
-Restart=on-failure
+Restart=always
+RestartSec=3
 
 [Install]
 WantedBy=default.target
@@ -837,10 +906,39 @@ EOF
             systemctl --user daemon-reload
             systemctl --user enable sxhkd.service
             
-            # Start the service if it's not already running
-            if ! systemctl --user is-active sxhkd.service &>/dev/null; then
-                echo -e "${YELLOW}Starting sxhkd service...${NC}"
-                systemctl --user start sxhkd.service
+            # Try to start the service with error handling
+            echo -e "${YELLOW}Starting sxhkd service...${NC}"
+            
+            # First stop any existing instances to avoid conflicts
+            if pgrep -x sxhkd > /dev/null; then
+                stop_sxhkd
+            fi
+            
+            # Start the service
+            systemctl --user start sxhkd.service
+            
+            # Check if it started
+            sleep 1
+            if pgrep -x sxhkd > /dev/null; then
+                echo
+                echo -e "${GREEN}[✓] Sxhkd service started successfully.${NC}"
+            else
+                echo -e "${RED}[✗] Failed to start sxhkd via systemd. Starting directly...${NC}"
+                
+                # Start sxhkd directly as fallback
+                sxhkd >/dev/null 2>&1 &
+                disown
+                
+                # Check if it started
+                sleep 1
+                if pgrep -x sxhkd > /dev/null; then
+                    echo -e "${GREEN}[✓] Sxhkd started directly.${NC}"
+                    echo -e "${YELLOW}Note: Systemd service might not be working correctly.${NC}"
+                    echo -e "${YELLOW}      Try rebooting your system to verify startup works.${NC}"
+                else
+                    echo -e "${RED}[✗] Failed to start sxhkd. Please check for errors:${NC}"
+                    echo -e "${YELLOW}Try running 'sxhkd -v' manually to see error messages.${NC}"
+                fi
             fi
             
             echo
@@ -856,19 +954,19 @@ EOF
                 echo -e "${GREEN}[✓] Sxhkd will no longer start automatically on login.${NC}"
                 
                 # Ask if user wants to stop the current session
-                echo
-                echo -e "${BOLD}${BLUE}╭─ Do you want to stop the currently running sxhkd session? [y/N]:${NC}"
-                echo -ne "${BOLD}${BLUE}╰─➤ ${NC}"
-                read -r stop_option
-                
-                if [[ "$stop_option" =~ ^[Yy]$ ]]; then
-                    echo -e "${YELLOW}Stopping sxhkd service...${NC}"
-                    systemctl --user stop sxhkd.service
-                    echo -e "${GREEN}[✓] Sxhkd service stopped.${NC}"
+                if pgrep -x sxhkd > /dev/null; then
+                    echo
+                    echo -e "${BOLD}${BLUE}╭─ Do you want to stop the currently running sxhkd session? [y/N]:${NC}"
+                    echo -ne "${BOLD}${BLUE}╰─➤ ${NC}"
+                    read -r stop_option
+                    
+                    if [[ "$stop_option" =~ ^[Yy]$ ]]; then
+                        stop_sxhkd
+                    fi
                 fi
             else
                 # Even if service is not enabled, check if it's running and offer to stop it
-                if systemctl --user is-active sxhkd.service &>/dev/null; then
+                if pgrep -x sxhkd > /dev/null; then
                     echo -e "${YELLOW}Sxhkd is running but not configured for startup.${NC}"
                     echo
                     echo -e "${BOLD}${BLUE}╭─ Do you want to stop the currently running sxhkd session? [y/N]:${NC}"
@@ -876,9 +974,7 @@ EOF
                     read -r stop_option
                     
                     if [[ "$stop_option" =~ ^[Yy]$ ]]; then
-                        echo -e "${YELLOW}Stopping sxhkd service...${NC}"
-                        systemctl --user stop sxhkd.service
-                        echo -e "${GREEN}[✓] Sxhkd service stopped.${NC}"
+                        stop_sxhkd
                     fi
                 else
                     echo -e "${YELLOW}Sxhkd is not configured for startup. No changes needed.${NC}"
@@ -896,6 +992,42 @@ EOF
     esac
     
     echo
+}
+
+# Function to ensure sxhkd is running
+ensure_sxhkd_running() {
+    debug_print "ensure_sxhkd_running called"
+    
+    # Check if sxhkd is running
+    if ! pgrep -x sxhkd > /dev/null; then
+        debug_print "sxhkd is not running"
+        
+        # Don't auto-start in the startup menu
+        if [[ "$1" == "no_autostart" ]]; then
+            debug_print "Not auto-starting sxhkd because no_autostart flag is set"
+            return 0
+        fi
+        
+        debug_print "Attempting to start sxhkd"
+        
+        # Try direct start first as it's more reliable
+        debug_print "Starting sxhkd directly"
+        sxhkd >/dev/null 2>&1 &
+        disown
+        
+        # Check if it started successfully
+        sleep 1
+        if pgrep -x sxhkd > /dev/null; then
+            debug_print "sxhkd started successfully via direct launch"
+            return 0
+        else
+            debug_print "Failed to start sxhkd directly"
+            return 1
+        fi
+    else
+        debug_print "sxhkd is already running"
+        return 0
+    fi
 }
 
 # Main function to handle keybinding commands
@@ -925,6 +1057,16 @@ handle_keybind() {
         debug_print "No command provided, showing help"
         show_keybind_help
         return 0
+    fi
+    
+    # Don't auto-start sxhkd for the startup command
+    if [[ "$command" == "startup" ]]; then
+        debug_print "Startup command detected, not auto-starting sxhkd"
+        # Ensure sxhkd is running with no_autostart flag
+        ensure_sxhkd_running "no_autostart"
+    else
+        # Ensure sxhkd is running
+        ensure_sxhkd_running
     fi
     
     case "$command" in
