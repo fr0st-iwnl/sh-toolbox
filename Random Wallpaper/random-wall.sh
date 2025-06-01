@@ -16,6 +16,7 @@
 BOLD="\033[1m"
 GREEN="\033[0;32m"
 BLUE="\033[1;34m"
+MID_BLUE='\033[38;2;135;206;250m'
 YELLOW="\033[0;33m"
 RED="\033[0;31m"
 CYAN="\033[0;36m"
@@ -65,7 +66,7 @@ print_info() {
 }
 
 print_error() {
-    echo -e "${RED}✗ ERROR: $1${RESET}" >&2
+    echo -e "${RED}[✗] $1${RESET}" >&2
 }
 
 print_warning() {
@@ -298,8 +299,8 @@ while [[ $# -gt 0 ]]; do
                 PATH_PROVIDED=true
             else
                 echo
-                print_error "Unknown option: $1"
-                print_info "Use -h or --help to see available options"
+                print_error "Unknown option:${RESET} $1"
+                echo -e "Run ${MID_BLUE}random-wall --help${RESET} for usage information."
                 echo
                 exit 1
             fi

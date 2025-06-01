@@ -16,7 +16,9 @@ CYAN='\033[0;36m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[1;34m'
+MID_BLUE='\033[38;2;135;206;250m'
 PURPLE='\033[0;35m'
+RED='\033[0;31m'
 BOLD='\033[1m'
 RESET='\033[0m'
 
@@ -28,8 +30,8 @@ show_help() {
     echo "└───────────────────────────────────┘"
     echo ""
     echo -e "${CYAN}${BOLD}Options:${RESET}"
-    echo -e "  ${YELLOW}-h${RESET}    ${GREEN}Show this help message${RESET}"
-    echo -e "  ${YELLOW}-n${RESET}    ${GREEN}Show quote as a desktop notification${RESET}"
+    echo -e "  ${YELLOW}-h, --help${RESET}    ${GREEN}Show this help message${RESET}"
+    echo -e "  ${YELLOW}-n, --notify${RESET}  ${GREEN}Show quote as a desktop notification${RESET}"
     echo ""
     echo -e "${BLUE}This script displays a random quote in the terminal.${RESET}"
     echo ""
@@ -39,19 +41,26 @@ show_help() {
 # PARSE ARGUMENTS
 show_notification=false
 
-while getopts "hn" opt; do
-    case $opt in
-        h)
+# Use modern argument parsing to support both short and long options
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -h|--help)
             show_help
             ;;
-        n)
+        -n|--notify)
             show_notification=true
+            shift
             ;;
-        \?)
-            echo "Invalid option: -$OPTARG" >&2
-            show_help
+        *)
+            # Unknown option
+            echo
+            echo -e "${RED}[✗] Unknown option:${RESET} $1"
+            echo -e "Run ${MID_BLUE}quote --help${RESET} for usage information."
+            echo
+            exit 1
             ;;
     esac
+    shift
 done
 
 # QUOTES
@@ -111,7 +120,7 @@ if $show_notification; then
         # Set notification to stay for 7 seconds with -t option (time in milliseconds)
         notify-send -t 7000 "Quote of the Day" "$EMOJI $clean_quote"
     else
-        echo "Error: notify-send command not found. Please install libnotify-bin package."
+        echo -e "${RED}[✗] Error: notify-send command not found. Please install libnotify-bin package.${RESET}"
         exit 1
     fi
 fi

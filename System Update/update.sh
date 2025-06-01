@@ -14,6 +14,7 @@
 
 # Colors :)
 RED='\033[0;31m'
+BRIGHT_RED='\033[1;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[38;2;152;251;152m'
 BLUE='\033[0;34m'
@@ -21,7 +22,41 @@ MAGENTA='\033[0;35m'
 CYAN='\033[0;36m'
 BOLD='\033[1m'
 MID_BLUE='\033[38;2;135;206;250m'
+SECOND_BLUE='\033[1;34m'
+SECOND_GREEN='\033[1;32m'
 NC='\033[0m' # No Color
+
+# Parse command line options
+TIME_UPDATE=false
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -t|--time)
+            TIME_UPDATE=true
+            shift
+            ;;
+        -h|--help)
+            echo -e "${BOLD}${MID_BLUE}"
+            echo "┌───────────────────────────────────┐"
+            echo "│        SYSTEM UPDATE HELP         │"
+            echo "└───────────────────────────────────┘"
+            echo -e "${NC}"
+            echo -e "${SECOND_BLUE}Options:${NC}"
+            echo -e "  ${SECOND_GREEN}-h, --help${NC}        Display this help message"
+            echo -e "  ${SECOND_GREEN}-t, --time${NC}        Count the time for the update"
+            echo
+            exit 0
+            ;;
+        *)
+            # Unknown option
+            echo
+            echo -e "${RED}[✗] Unknown option:${NC} $1"
+            echo -e "Run ${MID_BLUE}update --help${NC} for usage information."
+            echo
+            exit 1
+            ;;
+    esac
+done
 
 # Detect distribution
 if [ -f /etc/os-release ]; then
@@ -86,7 +121,14 @@ count_updates() {
 }
 
 update_system() {
-    echo -e "\n${BOLD}${GREEN}Starting the system update...${NC}\n"
+    local start_time=0
+    
+    if [ "$TIME_UPDATE" = true ]; then
+        start_time=$(date +%s)
+        echo -e "\n${BOLD}${CYAN}Starting timed update at $(date +"%T")...${NC}\n"
+    else
+        echo -e "\n${BOLD}${GREEN}Starting the system update...${NC}\n"
+    fi
 
     # Update official packages
     echo -e "${CYAN}${BOLD}Updating official packages...${NC}"
@@ -131,7 +173,32 @@ update_system() {
         echo -e "\n${YELLOW}Flatpak not installed, skipping Flatpak updates.${NC}"
     fi
 
-    echo -e "\n${GREEN}${BOLD}System update completed.${NC}"
+    if [ "$TIME_UPDATE" = true ]; then
+        end_time=$(date +%s)
+        duration=$((end_time - start_time))
+        hours=$((duration / 3600))
+        minutes=$(( (duration % 3600) / 60 ))
+        seconds=$((duration % 60))
+        
+        echo
+        echo -e "${CYAN}───────────────────────────────────────────${NC}"
+        echo -e "${GREEN}${BOLD}System update completed.${NC}"
+        echo -ne "${BOLD}Duration: ${NC}"
+        if [ $hours -gt 0 ]; then
+            echo -e "${YELLOW}${hours}h ${minutes}m ${seconds}s${NC}"
+        elif [ $minutes -gt 0 ]; then
+            echo -e "${YELLOW}${minutes}m ${seconds}s${NC}"
+        else
+            echo -e "${YELLOW}${seconds}s${NC}"
+        fi
+        echo -e "${CYAN}───────────────────────────────────────────${NC}"
+    else
+        echo
+        echo -e "${CYAN}───────────────────────────────────────────${NC}"    
+        echo -e "${GREEN}${BOLD}         System update completed.${NC}"
+        echo -e "${CYAN}───────────────────────────────────────────${NC}"
+    fi
+    echo
 }
 
 # Print header
@@ -195,4 +262,5 @@ if [[ "$answer" =~ ^[Yy]$ ]]; then
     update_system
 else
     echo -e "${YELLOW}Update canceled.${NC}"
+    echo
 fi

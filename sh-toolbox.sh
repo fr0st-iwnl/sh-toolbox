@@ -48,9 +48,9 @@ show_help() {
     echo
     echo -e "  ${GREEN}-h, --help${NC}      - Display this help menu"
     echo -e "  ${GREEN}-i, --install${NC}   - Run the sh-toolbox installer"
+    echo -e "  ${GREEN}-u, --uninstall${NC} - Uninstall sh-toolbox"
     echo -e "  ${GREEN}-c, --commands${NC}  - Display available commands"
     echo -e "  ${GREEN}-k, --keybind${NC}   - Manage keybindings using sxhkd"
-    echo -e "  ${GREEN}-u, --uninstall${NC} - Uninstall sh-toolbox"
     echo 
 }
 
@@ -418,8 +418,10 @@ main() {
                 echo -e "  3. Run ${GREEN}./sh-toolbox -h${NC} for detailed help"
                 echo
             else
-                echo -e "${RED}Unknown option: $1${NC}"
-                echo -e "Use ${GREEN}./sh-toolbox -h${NC} to see available options"
+                echo
+                echo -e "${RED}[✗] Unknown option:${NC} $1"
+                echo -e "Use ${MID_BLUE}sh-toolbox --help${NC} to see available options"
+                echo
                 exit 1
             fi
             ;;

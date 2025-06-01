@@ -21,6 +21,7 @@ YELLOW='\033[0;33m'
 CYAN='\033[0;36m'
 PURPLE='\033[0;35m'
 BOLD='\033[1m'
+MID_BLUE='\033[38;2;135;206;250m'
 NC='\033[0m' # No Color
 
 # Symbols :o
@@ -50,20 +51,32 @@ SHOW_IP=false
 RUN_SPEEDTEST=true
 USE_NOTIFY=true  # Notifications enabled by default
 
-for arg in "$@"; do
-    case $arg in
+# Process each argument
+while [[ $# -gt 0 ]]; do
+    case $1 in
         -h|--help)
             display_usage
             exit 0
             ;;
         -s|--show-ip)
             SHOW_IP=true
+            shift
             ;;
         -q|--quick)
             RUN_SPEEDTEST=false
+            shift
             ;;
         -n|--no-notify)
             USE_NOTIFY=false
+            shift
+            ;;
+        *)
+            # Unknown option
+            echo
+            echo -e "${RED}[✗] Unknown option:${NC} $1"
+            echo -e "Run ${MID_BLUE}netinfo --help${NC} for usage information."
+            echo
+            exit 1
             ;;
     esac
 done

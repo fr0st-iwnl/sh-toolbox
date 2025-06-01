@@ -1035,6 +1035,12 @@ handle_keybind() {
     # Create config directories if they don't exist, but don't load anything yet
     ensure_config_dirs
     
+    # Check for help flags first
+    if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+        show_keybind_help
+        return 0
+    fi
+    
     # Check for debug mode
     if [[ "$1" == "debug" ]]; then
         DEBUG_MODE=true
@@ -1097,7 +1103,8 @@ handle_keybind() {
             ;;
         *)
             echo
-            echo -e "${RED}[✗] Unknown keybind command: $command${NC}" >&2
+            echo -e "${RED}[✗] Unknown keybind command:${NC} $command" >&2
+            echo -e "Run ${MID_BLUE}keybind --help${NC} for usage information."
             echo
             # Don't show help menu on error
             return 1

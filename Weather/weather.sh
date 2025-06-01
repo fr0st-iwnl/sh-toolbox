@@ -29,6 +29,8 @@ YELLOW="\033[1;33m"
 CYAN="\033[1;36m"
 PURPLE="\033[1;35m"
 RED="\033[1;31m"
+DARK_RED='\033[0;31m'
+MID_BLUE='\033[38;2;135;206;250m'
 BOLD="\033[1m"
 RESET="\033[0m"
 
@@ -83,8 +85,10 @@ while [[ $# -gt 0 ]]; do
       exit 0
       ;;
     *)
-      echo -e "${RED}Error:${RESET} Unknown option '$1'"
-      show_help
+      echo
+      echo -e "${DARK_RED}[✗] Unknown option:${RESET} $1"
+      echo -e "Run ${MID_BLUE}weather --help${RESET} for usage information."
+      echo
       exit 1
       ;;
   esac

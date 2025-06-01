@@ -16,9 +16,11 @@
 BOLD='\033[1m'
 UNDERLINE='\033[4m'
 RED='\033[1;31m'        # Brighter red (bold)
+DARK_RED='\033[0;31m'  # Dark red (regular)
 GREEN='\033[1;32m'      # Brighter green (bold)
 YELLOW='\033[1;33m'     # Brighter yellow (bold)
 BLUE='\033[1;34m'       # Brighter blue (bold)
+MID_BLUE='\033[38;2;135;206;250m' # Mid blue
 PURPLE='\033[1;35m'     # Brighter magenta (bold)
 CYAN='\033[1;36m'       # Brighter cyan (bold)
 WHITE='\033[1;37m'      # Bright white (bold)
@@ -377,7 +379,7 @@ show_error() {
     echo -e "${RED}${BOLD}ERROR:${RESET} $1"
     echo
     echo -e "Use either ${GREEN}HH:MM[:SS]${RESET}, a duration (e.g., ${GREEN}30m${RESET}), or complex format (e.g., ${GREEN}1h 5m 10s${RESET})."
-    echo -e "Run ${GREEN}remind-me --help${RESET} for more information."
+    echo -e "Run ${MID_BLUE}remind-me --help${RESET} for more information."
     echo
     exit 1
 }
@@ -773,8 +775,8 @@ main() {
             # If first argument doesn't match any command and we have at least 2 args
             if [ $# -lt 2 ]; then
                 echo
-                echo -e "${RED}${BOLD}ERROR:${RESET} Missing parameters!"
-                echo -e "Run ${CYAN}remind-me --help${RESET} for usage information."
+                echo -e "${DARK_RED}[✗] Unknown option:${RESET} $1"
+                echo -e "Run ${MID_BLUE}remind-me --help${RESET} for usage information."
                 echo
                 exit 1
             fi

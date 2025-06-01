@@ -31,6 +31,10 @@ https://github.com/user-attachments/assets/a4663feb-0799-4077-8713-60febc195593
 - **User confirmation before proceeding with updates.**
 - **Outputs the number of available updates in a clear format.**
 
+## 📝 Command Options
+
+- `-h, --help`: Display help message with usage information
+- `-t, --time`: Count and display the time taken for the update process
 
 ## 📦 Installation
 
