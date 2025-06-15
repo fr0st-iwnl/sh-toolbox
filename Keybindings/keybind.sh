@@ -33,6 +33,10 @@ SXHKD_CONFIG_BACKUP="$HOME/.config/sxhkd/sxhkdrc.backup"
 SXHKD_TOOLBOX_SECTION="$CONFIG_DIR/sxhkd-section.conf"
 SYSTEMD_SERVICE_FILE="$HOME/.config/systemd/user/sxhkd.service"
 
+# Backup directory and file
+BACKUP_DIR="$HOME/.local/share/bin/Keybindings Backup"
+KEYBINDS_BACKUP="$BACKUP_DIR/keybinds.conf.backup"
+
 # Global debug flag
 DEBUG_MODE=false
 
@@ -69,12 +73,22 @@ show_keybind_help() {
     echo -e "  ${GREEN}keybind${NC} [command]"
     echo
     echo -e "${BOLD}${BLUE}Commands:${NC}"
+    echo
+    echo -e "${BOLD}${CYAN}● Keybinding Management:${NC}"
     echo -e "  ${GREEN}list${NC}                     - List all configured keybindings"
     echo -e "  ${GREEN}add${NC}                      - Add a new keybinding"
     echo -e "  ${GREEN}remove${NC}                   - Remove a keybinding"
+    echo
+    echo -e "${BOLD}${CYAN}● Configuration:${NC}"
     echo -e "  ${GREEN}load${NC}                     - Load sh-toolbox default keybindings"
     echo -e "  ${GREEN}reload${NC}                   - Reload sxhkd configuration"
     echo -e "  ${GREEN}startup${NC}                  - Configure sxhkd startup options"
+    echo
+    echo -e "${BOLD}${CYAN}● Backup & Restore:${NC}"
+    echo -e "  ${GREEN}backup${NC}                   - Backup keybinding configuration"
+    echo -e "  ${GREEN}restore${NC}                  - Restore keybinding backup"
+    echo
+    echo -e "${BOLD}${CYAN}● Help & Debug:${NC}"
     echo -e "  ${GREEN}help${NC}                     - Display this help information"
     echo -e "  ${GREEN}debug [command]${NC}          - Run any command in debug mode"
     echo
@@ -1030,6 +1044,151 @@ ensure_sxhkd_running() {
     fi
 }
 
+# Function to backup keybindings
+backup_keybindings() {
+    echo -e "${BOLD}${MID_BLUE}"
+    echo "┌───────────────────────────────────┐"
+    echo "│       Backup Keybindings          │"
+    echo "└───────────────────────────────────┘"
+    echo -e "${NC}"
+    
+    # Create backup directory if it doesn't exist
+    mkdir -p "$BACKUP_DIR"
+    
+    # Check if there are any keybindings to backup
+    if [ ! -s "$KEYBINDS_FILE" ]; then
+        echo -e "${YELLOW}[!] No keybindings configured yet. Nothing to backup.${NC}"
+        echo
+        return 1
+    fi
+    
+    # Copy the keybindings file
+    cp "$KEYBINDS_FILE" "$KEYBINDS_BACKUP"
+    
+    # Check if backup was successful
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}[✓] Keybindings successfully backed up to:${NC}"
+        echo -e "   ${CYAN}$KEYBINDS_BACKUP${NC}"
+        echo
+        echo -e "${YELLOW}[i] You can restore this backup after reinstallation with:${NC} keybind restore"
+        echo
+        return 0
+    else
+        echo
+        echo -e "${RED}[✗] Failed to backup keybindings.${NC}"
+        echo
+        return 1
+    fi
+}
+
+# Function to restore keybindings from backup
+restore_keybindings() {
+    echo -e "${BOLD}${MID_BLUE}"
+    echo "┌───────────────────────────────────┐"
+    echo "│       Restore Keybindings         │"
+    echo "└───────────────────────────────────┘"
+    echo -e "${NC}"
+    
+    # Check if backup exists
+    if [ ! -f "$KEYBINDS_BACKUP" ]; then
+        echo -e "${RED}[✗] No keybinding backup found at:${NC}"
+        echo -e "   ${CYAN}$KEYBINDS_BACKUP${NC}"
+        echo
+        echo -e "${YELLOW}[i] You need to create a backup first with:${NC}"
+        echo -e "   ${GREEN}keybind backup${NC}"
+        
+        # Check if there might be a backup at the old location
+        local OLD_BACKUP_DIR="$HOME/.sh-toolbox-backup"
+        local OLD_KEYBINDS_BACKUP="$OLD_BACKUP_DIR/keybinds.conf.backup"
+        
+        if [ -f "$OLD_KEYBINDS_BACKUP" ]; then
+            echo
+            echo -e "${YELLOW}[!] Found a backup at the old location:${NC}"
+            echo -e "   ${CYAN}$OLD_KEYBINDS_BACKUP${NC}"
+            echo
+            echo -e "${BOLD}${BLUE}╭─ Would you like to migrate this backup to the new location? [Y/n]:${NC}"
+            echo -ne "${BOLD}${BLUE}╰─➤ ${NC}"
+            read -r migrate_choice
+            
+            if [[ ! "$migrate_choice" =~ ^[Nn]$ ]]; then
+                # Create the new backup directory
+                mkdir -p "$BACKUP_DIR"
+                
+                # Copy the old backup to the new location
+                cp "$OLD_KEYBINDS_BACKUP" "$KEYBINDS_BACKUP"
+                
+                if [ $? -eq 0 ]; then
+                    echo -e "${GREEN}[✓] Backup successfully migrated to:${NC}"
+                    echo -e "   ${CYAN}$KEYBINDS_BACKUP${NC}"
+                    echo
+                    # Continue with the restore process
+                else
+                    echo
+                    echo -e "${RED}[✗] Failed to migrate backup.${NC}"
+                    echo
+                    return 1
+                fi
+            else
+                echo
+                echo -e "${RED}[✗] Restore operation cancelled.${NC}"
+                echo
+                return 1
+            fi
+        else
+            echo
+            return 1
+        fi
+    fi
+    
+    # Check if backup is not empty
+    if [ ! -s "$KEYBINDS_BACKUP" ]; then
+        echo -e "${RED}[✗] Backup file exists but is empty.${NC}"
+        echo
+        return 1
+    fi
+    
+    # Check if there are current keybindings
+    if [ -s "$KEYBINDS_FILE" ]; then
+        echo -e "${YELLOW}[!] You already have keybindings configured.${NC}"
+        echo -e "${YELLOW}    These will be replaced with your backed up configuration.${NC}"
+        echo
+        echo -e "${BOLD}${BLUE}╭─ Continue with restore? [y/N]:${NC}"
+        echo -ne "${BOLD}${BLUE}╰─➤ ${NC}"
+        read -r confirm
+        
+        if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+            echo
+            echo -e "${RED}[✗] Restore operation cancelled.${NC}"
+            echo
+            return 1
+        fi
+    fi
+    
+    # Ensure the config directory exists
+    ensure_config_dirs
+    
+    # Copy the backup to the keybinds file
+    cp "$KEYBINDS_BACKUP" "$KEYBINDS_FILE"
+    
+    # Check if restore was successful
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}[✓] Keybindings successfully restored.${NC}"
+        
+        # Generate sxhkd config
+        generate_sxhkd_config
+        
+        # Reload sxhkd
+        reload_sxhkd
+        
+        echo
+        return 0
+    else
+        echo -e "${RED}[✗] Failed to restore keybindings.${NC}"
+        echo
+        return 1
+    fi
+}
+
 # Main function to handle keybinding commands
 handle_keybind() {
     # Create config directories if they don't exist, but don't load anything yet
@@ -1094,6 +1253,12 @@ handle_keybind() {
             reload_sxhkd
             echo -e "${GREEN}[✓] sxhkd configuration reloaded.${NC}"
             echo
+            ;;
+        "backup")
+            backup_keybindings
+            ;;
+        "restore")
+            restore_keybindings
             ;;
         "startup")
             configure_startup
