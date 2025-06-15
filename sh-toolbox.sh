@@ -12,7 +12,7 @@
 # Pull Requests: https://github.com/fr0st-iwnl/sh-toolbox/pulls
 #-----------------------------------------------------------------
 
-# Colors for output
+# Colors :)
 GREEN='\033[0;32m'
 BLUE='\033[1;34m'
 CYAN='\033[0;36m'
@@ -36,7 +36,7 @@ show_welcome() {
     echo -e "${NC}"
     echo -e "${CYAN}Welcome to sh-toolbox - A collection of useful shell tools${NC}"
     echo
-    echo -e "${YELLOW}Version: ${NC}1.3"
+    echo -e "${YELLOW}Version: ${NC}1.4"
     echo -e "${YELLOW}GitHub: ${NC}https://github.com/fr0st-iwnl/sh-toolbox"
     echo
 }
@@ -51,6 +51,7 @@ show_help() {
     echo -e "  ${GREEN}-u, --uninstall${NC} - Uninstall sh-toolbox"
     echo -e "  ${GREEN}-c, --commands${NC}  - Display available commands"
     echo -e "  ${GREEN}-k, --keybind${NC}   - Manage keybindings using sxhkd"
+    echo -e "  ${GREEN}-p, --update${NC}    - Check for updates to sh-toolbox"
     echo 
 }
 
@@ -77,6 +78,35 @@ show_error() {
     echo -e "${RED}[✗] ${msg}${NC}" >&2
 }
 
+# Function to create a sudo wrapper for scripts that need root permissions
+create_sudo_wrapper() {
+    local script_name="$1"
+    local script_path="$2"
+    
+    # Create wrapper script
+    cat > "temp-wrapper" << EOF
+#!/bin/bash
+if [ "\$(id -u)" != "0" ]; then
+    echo -e "\033[0;33m[!] This tool requires root privileges to run.\033[0m"
+    echo -e "\033[0;33m[!] You will be prompted for your password.\033[0m"
+    exec sudo "$script_path" "\$@"
+else
+    exec "$script_path" "\$@"
+fi
+EOF
+    
+    # Set it as executable
+    chmod +x "temp-wrapper"
+    
+    # Install it system-wide quietly
+    if sudo mv "temp-wrapper" "/usr/local/bin/$script_name" 2>/dev/null; then
+        return 0
+    else
+        rm -f "temp-wrapper"
+        return 1
+    fi
+}
+
 # Function to run the installer
 run_installer() {
     echo -e "${BOLD}${MID_BLUE}"
@@ -86,7 +116,7 @@ run_installer() {
     echo -e "${NC}"
 
     # Check if running from the correct directory
-    if [ ! -d "NetInfo" ] || [ ! -d "Quotes" ] || [ ! -d "Remind Me" ] || [ ! -d "Weather" ] || [ ! -d "System Update" ] || [ ! -d "Random Wallpaper" ] || [ ! -d "Keybindings" ]; then
+    if [ ! -d "NetInfo" ] || [ ! -d "Quotes" ] || [ ! -d "Remind Me" ] || [ ! -d "Weather" ] || [ ! -d "System Update" ] || [ ! -d "Random Wallpaper" ] || [ ! -d "Keybindings" ] || [ ! -d "PrivateSearch" ]; then
         show_error "Missing required directories. Please run this script from the sh-toolbox root directory"
         exit 1
     fi
@@ -140,6 +170,38 @@ run_installer() {
     cp "$(pwd)/Keybindings/keybind.sh" "$HOME/.local/share/bin/keybind"
     chmod +x "$HOME/.local/share/bin/keybind"
     show_success "Keybind tool installed as 'keybind'"
+    
+    animate_progress "Installing PrivateSearch tool"
+    cp "$(pwd)/PrivateSearch/private-search.sh" "$HOME/.local/share/bin/private-search-script"
+    chmod +x "$HOME/.local/share/bin/private-search-script"
+    
+    # Create a proper wrapper for private-search
+    cat > "$HOME/.local/share/bin/private-search" << EOF
+#!/bin/bash
+
+# Colors
+YELLOW='\033[0;33m'
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+# Check if running as root
+if [ "\$(id -u)" != "0" ]; then
+    # Check if sudo credentials are already cached
+    if ! sudo -n true 2>/dev/null; then
+        # Only show password prompt message if credentials aren't cached
+        echo -e "\${YELLOW}[!] PrivateSearch requires root privileges to run.\${NC}"
+        echo -e "\${YELLOW}[!] You will be prompted for your password.\${NC}"
+    fi
+    sudo "\$0" "\$@"
+    exit \$?
+else
+    # When running as root, execute the actual script
+    exec "$HOME/.local/share/bin/private-search-script" "\$@"
+fi
+EOF
+    chmod +x "$HOME/.local/share/bin/private-search"
+    show_success "PrivateSearch installed as 'private-search'"
     
     # Create Keybindings directory in the bin location
     animate_progress "Installing Keybinding scripts"
@@ -211,6 +273,30 @@ run_uninstaller() {
 
     echo
 
+    # Stop sxhkd process if it's running
+    animate_progress "Stopping sxhkd process"
+    if pgrep -x sxhkd > /dev/null; then
+        # Try to kill the process
+        pkill -x sxhkd
+        sleep 1
+        
+        # Check if it's still running and force kill if needed
+        if pgrep -x sxhkd > /dev/null; then
+            pkill -9 -x sxhkd
+            sleep 1
+        fi
+        
+        # Verify it's stopped
+        if pgrep -x sxhkd > /dev/null; then
+            echo -e "${YELLOW}[!] Warning: Could not stop sxhkd process. Your keybindings may remain active.${NC}"
+            echo -e "${YELLOW}    You can manually stop it with: pkill -9 sxhkd${NC}"
+        else
+            show_success "Stopped sxhkd process"
+        fi
+    else
+        show_success "No running sxhkd process found"
+    fi
+
     # Disable and remove systemd service for sxhkd if it exists
     animate_progress "Checking sxhkd systemd service"
     SYSTEMD_SERVICE_FILE="$HOME/.config/systemd/user/sxhkd.service"
@@ -254,7 +340,33 @@ run_uninstaller() {
     rm -f "$HOME/.local/share/bin/weather" 2>/dev/null
     rm -f "$HOME/.local/share/bin/random-wall" 2>/dev/null
     rm -f "$HOME/.local/share/bin/keybind" 2>/dev/null
+    rm -f "$HOME/.local/share/bin/private-search" 2>/dev/null
+    rm -f "$HOME/.local/share/bin/private-search-script" 2>/dev/null
     rm -rf "$HOME/.local/share/bin/Keybindings" 2>/dev/null
+    
+    # Handle PrivateSearch sudo wrapper without requiring password
+    if [ -f "/usr/local/bin/private-search" ]; then
+        animate_progress "Checking for PrivateSearch sudo wrapper"
+        echo
+        echo -e "${YELLOW}[!] Found PrivateSearch sudo wrapper at /usr/local/bin/private-search${NC}"
+        echo -e "${YELLOW}╭─ Do you want to remove it now? (requires sudo password) [Y/n]:${NC}"
+        echo -ne "${BOLD}${YELLOW}╰─➤ ${NC}"
+        read -r remove_wrapper
+        
+        if [[ ! "$remove_wrapper" =~ ^[Nn]$ ]]; then
+            echo -e "${YELLOW}Removing sudo wrapper...${NC}"
+            if sudo rm -f "/usr/local/bin/private-search" 2>/dev/null; then
+                echo -e "${GREEN}[✓] Successfully removed PrivateSearch sudo wrapper${NC}"
+            else
+                echo -e "${RED}[✗] Failed to remove sudo wrapper${NC}"
+                echo -e "${YELLOW}    You can remove it manually later with: sudo rm /usr/local/bin/private-search${NC}"
+            fi
+        else
+            echo -e "${YELLOW}[!] Skipping removal of sudo wrapper${NC}"
+            echo -e "${YELLOW}    You can remove it manually later with: sudo rm /usr/local/bin/private-search${NC}"
+        fi
+    fi
+    
     show_success "Removed all sh-toolbox scripts"
     
     # Remove config directories
@@ -351,6 +463,202 @@ run_command() {
     return 0
 }
 
+# Function to check for updates and update sh-toolbox
+check_for_updates() {
+    echo -e "${BOLD}${MID_BLUE}"
+    echo "┌───────────────────────────────────┐"
+    echo "│      Checking for Updates         │"
+    echo "└───────────────────────────────────┘"
+    echo -e "${NC}"
+
+    # Current version (extracted from the script)
+    CURRENT_VERSION=$(grep -oP 'Version: \${NC}\K[0-9]+\.[0-9]+' "$0" 2>/dev/null || echo "")
+    
+    if [ -z "$CURRENT_VERSION" ]; then
+        # Try alternative pattern
+        CURRENT_VERSION=$(grep -oP 'echo -e.*Version: \${NC}\K[0-9]+\.[0-9]+' "$0" 2>/dev/null || echo "")
+        if [ -z "$CURRENT_VERSION" ]; then
+            CURRENT_VERSION="unknown"
+            show_error "Could not determine current version, assuming outdated."
+        fi
+    fi
+    
+    echo -e "${CYAN}Current version:${NC} $CURRENT_VERSION"
+    
+    
+    # Check if curl or wget is available
+    if command -v curl &>/dev/null; then
+        # echo -e "${YELLOW}Checking for latest version...${NC}"
+        LATEST_VERSION=$(curl -s https://sh-toolbox.netlify.app/version.txt | tr -d '\r\n')
+    elif command -v wget &>/dev/null; then
+        # echo -e "${YELLOW}Checking for latest version...${NC}"
+        LATEST_VERSION=$(wget -qO- https://sh-toolbox.netlify.app/version.txt | tr -d '\r\n')
+    else
+        show_error "Neither curl nor wget found. Cannot check for updates."
+        exit 1
+    fi
+    
+    if [ -z "$LATEST_VERSION" ]; then
+        show_error "Failed to retrieve latest version."
+        exit 1
+    fi
+    
+    echo -e "${CYAN}Latest version:${NC} $LATEST_VERSION"
+    echo
+    
+    # Compare versions (simple string comparison for now)
+    if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
+        show_success "You are running the latest version of sh-toolbox!"
+        exit 0
+    fi
+    
+    # If we get here, there is a newer version
+    echo -e "${YELLOW}A new version ($LATEST_VERSION) is available. You have version $CURRENT_VERSION.${NC}"
+    echo
+    echo -e "${YELLOW}Update options:${NC}"
+    echo -e "  ${GREEN}1)${NC} Automatic update (download and directly extract over current files)"
+    echo -e "  ${GREEN}2)${NC} Manual update (open browser to download the latest release)"
+    echo -e "  ${GREEN}3)${NC} Cancel"
+    echo
+    echo -e "${BOLD}${BLUE}╭─ Choose an option (1-3):${NC}"
+    echo -ne "${BOLD}${BLUE}╰─➤ ${NC}"
+    read -r update_choice
+    
+    case $update_choice in
+        1)
+            # Automatic update
+            echo
+            echo -e "${CYAN}Starting automatic update to version $LATEST_VERSION...${NC}"
+            
+            # Get the script's directory
+            SCRIPT_DIR=$(dirname "$(realpath "$0")")
+            cd "$SCRIPT_DIR" || exit 1
+            
+            # Download the release ZIP file directly
+            DOWNLOAD_URL="https://github.com/fr0st-iwnl/sh-toolbox/releases/download/$LATEST_VERSION/sh-toolbox.zip"
+            echo -e "${YELLOW}Downloading from: $DOWNLOAD_URL${NC}"
+            
+            if command -v curl &>/dev/null; then
+                curl -L -o sh-toolbox.zip "$DOWNLOAD_URL"
+                DOWNLOAD_SUCCESS=$?
+            elif command -v wget &>/dev/null; then
+                wget -q "$DOWNLOAD_URL" -O sh-toolbox.zip
+                DOWNLOAD_SUCCESS=$?
+            else
+                show_error "Neither curl nor wget found. Cannot download updates."
+                exit 1
+            fi
+            
+            # Check download success
+            if [ $DOWNLOAD_SUCCESS -ne 0 ]; then
+                show_error "Failed to download the latest version."
+                exit 1
+            fi
+            
+            echo -e "${YELLOW}Download complete. Extracting directly over current directory...${NC}"
+            
+            # Extract the ZIP file
+            if ! command -v unzip &>/dev/null; then
+                show_error "Unzip command not found. Please install unzip and try again."
+                rm -f sh-toolbox.zip
+                exit 1
+            fi
+            
+            # First extract to a temporary directory to handle different folder structures
+            TMP_EXTRACT_DIR=$(mktemp -d)
+            unzip -q sh-toolbox.zip -d "$TMP_EXTRACT_DIR"
+            if [ $? -ne 0 ]; then
+                show_error "Failed to extract the update package."
+                rm -f sh-toolbox.zip
+                rm -rf "$TMP_EXTRACT_DIR"
+                exit 1
+            fi
+            
+            # Find the sh-toolbox directory within the extracted files
+            MAIN_DIR=""
+            if [ -d "$TMP_EXTRACT_DIR/sh-toolbox" ]; then
+                MAIN_DIR="$TMP_EXTRACT_DIR/sh-toolbox"
+            else
+                # Try to find it if named differently
+                for dir in "$TMP_EXTRACT_DIR"/*; do
+                    if [ -d "$dir" ] && [ -f "$dir/sh-toolbox.sh" ]; then
+                        MAIN_DIR="$dir"
+                        break
+                    fi
+                done
+            fi
+            
+            if [ -z "$MAIN_DIR" ] || [ ! -f "$MAIN_DIR/sh-toolbox.sh" ]; then
+                # If we couldn't find a subdirectory with sh-toolbox.sh, check if it's directly in the TMP_EXTRACT_DIR
+                if [ -f "$TMP_EXTRACT_DIR/sh-toolbox.sh" ]; then
+                    MAIN_DIR="$TMP_EXTRACT_DIR"
+                else
+                    show_error "Could not find sh-toolbox.sh in the extracted files."
+                    rm -f sh-toolbox.zip
+                    rm -rf "$TMP_EXTRACT_DIR"
+                    exit 1
+                fi
+            fi
+            
+            # Now copy all the files to current directory 
+            echo -e "${YELLOW}Copying updated files...${NC}"
+            cp -r "$MAIN_DIR"/* ./
+            
+            # Make all scripts executable
+            chmod +x sh-toolbox.sh
+            find . -name "*.sh" -type f -exec chmod +x {} \;
+            
+            # Clean up
+            rm -f sh-toolbox.zip
+            rm -rf "$TMP_EXTRACT_DIR"
+            
+            echo
+            echo -e "${BOLD}${MID_BLUE}┌───────────────────────────────────┐"
+            echo -e "│        Update Complete!           │"
+            echo -e "└───────────────────────────────────┘"
+            echo -e "${NC}"
+            echo -e "${GREEN}[✓] sh-toolbox has been updated to version $LATEST_VERSION${NC}"
+            echo
+            ;;
+            
+        2)
+            # Manual update - provide links
+            echo
+            echo -e "${CYAN}Manual Update Instructions:${NC}"
+            echo -e "1. Download the latest release from:"
+            echo -e "   ${GREEN}https://github.com/fr0st-iwnl/sh-toolbox/releases/download/$LATEST_VERSION/sh-toolbox.zip${NC}"
+            echo -e "2. Extract the ZIP file into your current directory"
+            echo
+            echo -e "${YELLOW}Would you like to open the download link in your browser? [Y/n]${NC}"
+            echo -ne "${BOLD}${YELLOW}╰─➤ ${NC}"
+            read -r open_browser
+            
+            if [[ ! "$open_browser" =~ ^[Nn]$ ]]; then
+                # Try to open the browser
+                URL="https://github.com/fr0st-iwnl/sh-toolbox/releases/download/$LATEST_VERSION/sh-toolbox.zip"
+                
+                if command -v xdg-open &>/dev/null; then
+                    xdg-open "$URL"
+                elif command -v open &>/dev/null; then
+                    open "$URL"
+                elif command -v start &>/dev/null; then
+                    start "$URL"
+                else
+                    echo -e "${RED}[✗] Couldn't open a browser automatically.${NC}"
+                    echo -e "${YELLOW}Please manually visit:${NC}"
+                    echo -e "${GREEN}$URL${NC}"
+                fi
+            fi
+            ;;
+            
+        3|*)
+            # Cancel or invalid choice
+            echo -e "${GREEN}Oki!${NC}"
+            exit 0
+            ;;
+    esac
+}
+
 # Main function to process arguments
 main() {
     # Process arguments
@@ -363,6 +671,9 @@ main() {
             ;;
         -u|--uninstall)
             run_uninstaller
+            ;;
+        -p|--update)
+            check_for_updates
             ;;
         -k|--keybind)
             # Run keybind manager with remaining arguments
@@ -405,6 +716,7 @@ main() {
             echo -e "  ${GREEN}random-wall${NC} - Set a random wallpaper from a directory"
             echo -e "  ${GREEN}remind-me${NC}  - Set reminders for yourself"
             echo -e "  ${GREEN}keybind${NC}    - Manage keybindings using sxhkd"
+            echo -e "  ${GREEN}private-search${NC} - Install and configure a private search engine"
             echo
             ;;
         
@@ -415,7 +727,8 @@ main() {
                 echo -e "${BOLD}${MID_BLUE}Quick Start:${NC}"
                 echo -e "  1. Run ${GREEN}./sh-toolbox -i${NC} to install sh-toolbox"
                 echo -e "  2. Run ${GREEN}./sh-toolbox -c${NC} to see all available commands"
-                echo -e "  3. Run ${GREEN}./sh-toolbox -h${NC} for detailed help"
+                echo -e "  3. Run ${GREEN}./sh-toolbox -p${NC} to check for updates"
+                echo -e "  4. Run ${GREEN}./sh-toolbox -h${NC} for detailed help"
                 echo
             else
                 echo
