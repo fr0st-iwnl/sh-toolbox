@@ -3,9 +3,14 @@
 # Supports both PulseAudio and Pipewire
 
 # Configuration
+# Set to "true" to enable notifications, "false" to disable
 ENABLE_NOTIFICATIONS="true"
+# Notification cooldown in seconds (prevents notification spam)
+# Use integer value
 NOTIFICATION_COOLDOWN=1
+# Lockfile for notification rate limiting
 LOCKFILE="/tmp/volume_notification.lock"
+# The amount to increase/decrease volume (in percent)
 VOLUME_STEP=5
 
 # Colors

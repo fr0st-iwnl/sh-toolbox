@@ -16,7 +16,7 @@ LOCKFILE="/tmp/volume_notification.lock"
 # The amount to increase/decrease volume (in percent)
 VOLUME_STEP=5
 
-# Colors for terminal output
+# Colors
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
