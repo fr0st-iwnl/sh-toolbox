@@ -69,26 +69,36 @@ detect_audio_system() {
     fi
 }
 
-# Function to decrease volume using Pipewire
-decrease_volume_pipewire() {
-    # Decrease volume by specified step
-    wpctl set-volume @DEFAULT_AUDIO_SINK@ ${VOLUME_STEP}%-
-    
-    echo -e "${YELLOW}Volume decreased${NC}"
-    show_notification "audio-volume-low" "Volume Down" "Volume decreased"
+# Function to get current volume (works for both PipeWire and PulseAudio)
+get_current_volume() {
+    if command -v wpctl &> /dev/null; then
+        wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{print int($2 * 100) "%"}'
+    elif command -v pactl &> /dev/null; then
+        # Example output: "Volume: front-left: 65536 / 100% / 0.00 dB, ..."
+        pactl get-sink-volume @DEFAULT_SINK@ | grep -o '[0-9]\+%' | head -n 1
+    else
+        echo "N/A"
+    fi
 }
 
-# Function to decrease volume using PulseAudio
-decrease_volume_pulseaudio() {
-    # Get default sink (speaker/headphones)
-    default_sink=$(pactl get-default-sink)
-    
-    # Decrease by specified step
-    pactl set-sink-volume "$default_sink" -${VOLUME_STEP}%
-    
-    echo -e "${YELLOW}Volume decreased${NC}"
-    show_notification "audio-volume-low" "Volume Down" "Volume decreased"
+
+# PipeWire
+decrease_volume_pipewire() {
+    wpctl set-volume @DEFAULT_AUDIO_SINK@ ${VOLUME_STEP}%-
+    current_volume=$(get_current_volume)
+    echo -e "${YELLOW}Volume decreased to $current_volume${NC}"
+    show_notification "audio-volume-low" "Volume Down" "Now: $current_volume"
 }
+
+# PulseAudio
+decrease_volume_pulseaudio() {
+    default_sink=$(pactl get-default-sink)
+    pactl set-sink-volume "$default_sink" -${VOLUME_STEP}%
+    current_volume=$(get_current_volume)
+    echo -e "${YELLOW}Volume decreased to $current_volume${NC}"
+    show_notification "audio-volume-low" "Volume Down" "Now: $current_volume"
+}
+
 
 # Main function
 main() {
